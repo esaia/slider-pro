@@ -1,11 +1,10 @@
 <?php
 
 if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly
+    exit;
 }
 
 
-add_action('admin_menu', 'slider_pro_add_admin_menu');
 
 /**
  * Adds a custom menu item to the WordPress admin dashboard.
@@ -25,6 +24,9 @@ function slider_pro_add_admin_menu()
         100                 // The position of the menu item in the admin menu (higher numbers push it lower)
     );
 }
+
+add_action('admin_menu', 'slider_pro_add_admin_menu');
+
 
 
 /**
@@ -46,16 +48,28 @@ function slider_pro_render_page()
  * This function is used both for the admin area and the frontend.
  * It checks if the scripts/styles are already loaded before enqueuing them again.
  */
-function slider_pro_enqueue_vue_assets()
+function slider_pro_enqueue_vue_assets($hook)
 {
+    if ($hook !== 'toplevel_page_slider-pro') return;
+
     // Only enqueue once if not already enqueued
     if (wp_script_is('slider-pro-vue-js', 'enqueued')) {
         return; // If Vue.js script is already enqueued, do nothing
     }
 
-    // Enqueue Vue.js JavaScript and CSS for the plugin
-    wp_enqueue_script('slider-pro-vue-js', plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.js', [], null, true);
-    wp_enqueue_style('slider-pro-vue-styles', plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.css');
+
+    wp_enqueue_script(
+        'slider-pro-vue-js',
+        plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.js',
+        ['jquery', 'wp-util'],
+        null,
+        true
+    );
+
+    wp_enqueue_style(
+        'slider-pro-vue-styles',
+        plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.css'
+    );
 
     wp_localize_script('slider-pro-vue-js', 'irePlugin', array(
         'nonce' => wp_create_nonce('irep_nonce'),
@@ -65,4 +79,29 @@ function slider_pro_enqueue_vue_assets()
     ));
 }
 
-add_action('admin_enqueue_scripts', 'slider_pro_enqueue_vue_assets', 20);
+add_action('admin_enqueue_scripts', 'slider_pro_enqueue_vue_assets', 5);
+
+
+
+
+/**
+ * Add the 'type="module"' and 'defer' attributes to the Vue.js script tag.
+ *
+ * @param string $tag The HTML script tag.
+ * @param string $handle The handle of the script being enqueued.
+ *
+ * @return string Modified script tag with 'module' type and 'defer' attribute.
+ */
+function irep_force_module_type_attribute($tag, $handle)
+{
+    if ($handle === 'slider-pro-vue-js') {
+        $script_url = plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.js';
+
+        return '<script type="module" defer src="' . esc_url($script_url) . '"></script>';
+    }
+
+    return $tag;
+}
+
+
+add_filter('script_loader_tag', 'irep_force_module_type_attribute', 10, 2);

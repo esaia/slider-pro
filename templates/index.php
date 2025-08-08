@@ -1,3 +1,3 @@
-<div id="sldp-vue-app">
+<div id="slider-pro-vue-app">
 
 </div>

@@ -5,7 +5,7 @@ import SlidersTable from "@/pages/SlidersTable.vue";
 
 <template>
   <div>
-    <SlidersTable />
+    <!-- <SlidersTable /> -->
     <SliderEdit />
   </div>
 </template>

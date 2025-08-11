@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { useSelectImage } from "@/composables/useSelectImage";
 import { computed } from "vue";
-import Button from "primevue/button";
+import TrashIcon from "@/components/icons/TrashIcon.vue";
+import GalleryIcon from "@/components/icons/GalleryIcon.vue";
 
 const props = defineProps<{
   title: string;
@@ -19,16 +20,24 @@ const images = computed(() => {
 });
 </script>
 <template>
-  <div>
-    <i class="pi pi-check" style="font-size: 1rem"></i>
+  <div class="flex items-center gap-3">
+    <div
+      class="flex size-36 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm bg-green-600 transition-all hover:scale-105"
+      @click="selectImage"
+    >
+      <GalleryIcon class="[&_path]:stroke-white" />
+      <div class="text-lg text-white">ADD IMAGE</div>
+    </div>
 
-    <Button label="Upload" class="w-fit" variant="outlined" @click="selectImage" />
-
-    <div class="mt-4 flex items-center gap-3">
-      <div v-for="image in images" :key="image" class="relative">
-        <div class="absolute top-0 right-0">icon</div>
-        <img :src="image" alt="" class="h-20 w-20 object-cover" />
+    <div v-for="image in images" :key="image" class="group relative cursor-all-scroll">
+      <div class="absolute top-2 right-2 flex items-center gap-2">
+        <div
+          class="cursor-pointer rounded-full bg-white p-2 opacity-0 transition-all group-hover:opacity-100 hover:scale-105 [&_svg]:size-6"
+        >
+          <TrashIcon />
+        </div>
       </div>
+      <img :src="image" alt="" class="size-36 rounded-sm object-cover" />
     </div>
   </div>
 </template>

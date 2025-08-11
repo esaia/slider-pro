@@ -4,3 +4,7 @@
   /* --color-primary: #1fb6ff; */
   /* --color-secondary: #7e5bef; */
 }
+
+.container {
+  @apply p-4 pl-0;
+}

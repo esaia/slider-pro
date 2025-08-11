@@ -58,6 +58,9 @@ function slider_pro_enqueue_vue_assets($hook)
     }
 
 
+    // Enqueue WordPress media manager scripts (used for media handling in the plugin)
+    wp_enqueue_media();
+
     wp_enqueue_script(
         'slider-pro-vue-js',
         plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.js',

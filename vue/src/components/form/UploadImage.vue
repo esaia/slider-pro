@@ -22,7 +22,7 @@ const images = computed(() => {
 <template>
   <div class="flex items-center gap-3">
     <div
-      class="flex size-36 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm bg-green-600 transition-all hover:scale-105"
+      class="flex size-36 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm bg-green-500 transition-all hover:scale-105"
       @click="selectImage"
     >
       <GalleryIcon class="[&_path]:stroke-white" />

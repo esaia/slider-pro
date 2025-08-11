@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SliderSettingsTabs from "@/components/UI/SliderSettingsTabs.vue";
 import UploadImage from "@/components/form/UploadImage.vue";
-import InputText from "primevue/InputText";
+import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 </script>
 <template>
@@ -12,7 +12,7 @@ import Button from "primevue/button";
       <Button label="Save" class="w-fit" />
     </div>
 
-    <div class="overflow-hidden rounded-md bg-white shadow-sm">
+    <div class="bg-white shadow-sm">
       <div
         class="flex w-full items-center justify-between bg-gradient-to-r from-violet-600 to-indigo-600 p-4 text-white"
       >

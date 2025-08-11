@@ -17,3 +17,15 @@ export const CLICK_ACTIONS = [
   { name: "Link", value: "link" },
   { name: "None", value: "none" }
 ];
+
+export const ORIENTATION = [
+  { name: "Horizontal", value: "horizontal" },
+  { name: "Vertical", value: "vertical" }
+];
+
+export const DIRECTIONS = [
+  { name: "Right to left", value: "right" },
+  { name: "Left to right", value: "left" }
+];
+
+export const ALL_DIRECTIONS = ["right", "left", "up", "down"];

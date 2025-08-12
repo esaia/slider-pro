@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ALL_DIRECTIONS, NAVIGATION_POSITIONS, PAGINATION_STYLES } from "@/constants/constants";
+import { ALL_DIRECTIONS, DIRECTIONS, NAVIGATION_POSITIONS, PAGINATION_STYLES } from "@/constants/constants";
 import Config from "@components/UI/Config.vue";
 import ToggleButton from "primevue/togglebutton";
 import InputText from "primevue/inputtext";
@@ -14,6 +14,12 @@ import TabList from "primevue/tablist";
 import Tab from "primevue/tab";
 import TabPanels from "primevue/tabpanels";
 import TabPanel from "primevue/tabpanel";
+
+import { useProjectStore } from "@/store/useGlobal";
+import { storeToRefs } from "pinia";
+
+const globalStore = useProjectStore();
+const { metadata } = storeToRefs(globalStore);
 </script>
 <template>
   <Tabs value="0">
@@ -26,18 +32,44 @@ import TabPanel from "primevue/tabpanel";
       <TabPanel value="0">
         <div class="space-y-6">
           <Config title="AutoPlay" desc="Select a slide transition effect.">
-            <ToggleButton onLabel="On" offLabel="Off" />
+            <ToggleButton
+              :model-value="metadata.autoplay"
+              onLabel="On"
+              offLabel="Off"
+              @update:model-value="globalStore.updateMetadata('autoplay', $event)"
+            />
           </Config>
 
           <Config title="Slider speed" desc="Set autoplay scroll speed in millisecond.">
             <InputGroup>
-              <InputText type="number" class="!w-24" />
+              <InputText
+                :model-value="metadata.sliderSpeed"
+                type="number"
+                class="!w-24"
+                @update:model-value="globalStore.updateMetadata('sliderSpeed', $event)"
+              />
               <InputGroupAddon> MS </InputGroupAddon>
             </InputGroup>
           </Config>
 
+          <Config title="Slider Direction" desc="Set slider direction as you need.">
+            <SelectButton
+              :model-value="metadata.sliderDirection"
+              :options="DIRECTIONS"
+              size="small"
+              optionLabel="name"
+              option-value="value"
+              @update:model-value="globalStore.updateMetadata('sliderDirection', $event)"
+            />
+          </Config>
+
           <Config title="Pause on Hover" desc="Enable/Disable carousel pause on hover.">
-            <ToggleButton onLabel="On" offLabel="Off" />
+            <ToggleButton
+              :model-value="metadata.pauseonhover"
+              onLabel="On"
+              offLabel="Off"
+              @update:model-value="globalStore.updateMetadata('pauseonhover', $event)"
+            />
           </Config>
         </div>
       </TabPanel>
@@ -45,16 +77,24 @@ import TabPanel from "primevue/tabpanel";
       <TabPanel value="1">
         <div class="space-y-6">
           <Config title="Navigation" desc="Enable navigation.">
-            <ToggleButton onLabel="On" offLabel="Off" />
+            <ToggleButton
+              :model-value="metadata.navigation"
+              onLabel="On"
+              offLabel="Off"
+              @update:model-value="globalStore.updateMetadata('navigation', $event)"
+            />
           </Config>
 
           <Config title="Navigation position" desc="Select a position for the navigation arrows.">
             <Select
+              :model-value="metadata.navigationPosition"
               :options="NAVIGATION_POSITIONS"
               optionLabel="name"
               placeholder="Select a navigation position"
               size="small"
               class="w-full md:w-56"
+              option-value="value"
+              @update:model-value="globalStore.updateMetadata('navigationPosition', $event)"
             />
           </Config>
 
@@ -62,12 +102,20 @@ import TabPanel from "primevue/tabpanel";
             <div class="flex items-center gap-4">
               <div class="flex flex-col items-start gap-2 text-gray-500">
                 <label> Color:</label>
-                <ColorPicker name="color" />
+                <ColorPicker
+                  :model-value="metadata.navigationColors.color"
+                  name="color"
+                  @update:model-value="globalStore.updateMetadata('navigationColors.color', $event)"
+                />
               </div>
               <div class="flex flex-col items-start gap-2 text-gray-500">
                 <label>Active color:</label>
 
-                <ColorPicker name="color" />
+                <ColorPicker
+                  :model-value="metadata.navigationColors.active"
+                  name="color"
+                  @update:model-value="globalStore.updateMetadata('navigationColors.active', $event)"
+                />
               </div>
             </div>
           </Config>
@@ -77,36 +125,57 @@ import TabPanel from "primevue/tabpanel";
       <TabPanel value="2">
         <div class="space-y-6">
           <Config title="Enable pagination" desc="Show slider pagination.">
-            <ToggleButton onLabel="On" offLabel="Off" />
+            <ToggleButton
+              :model-value="metadata.pagination"
+              onLabel="On"
+              offLabel="Off"
+              @update:model-value="globalStore.updateMetadata('pagination', $event)"
+            />
           </Config>
 
           <Config title="Pagination Style" desc="Choose pagination style.">
-            <SelectButton :options="PAGINATION_STYLES" size="small" optionLabel="name" />
+            <SelectButton
+              :model-value="metadata.paginationStyle"
+              :options="PAGINATION_STYLES"
+              size="small"
+              optionLabel="name"
+              option-value="value"
+              @update:model-value="globalStore.updateMetadata('paginationStyle', $event)"
+            />
           </Config>
 
           <Config title="Pagination Color" desc="Set color for the slider pagination.">
             <div class="flex items-center gap-4">
               <div class="flex flex-col items-start gap-2 text-gray-500">
                 <label> Color:</label>
-                <ColorPicker name="color" />
+                <ColorPicker
+                  :model-value="metadata.paginationColors.color"
+                  name="color"
+                  @update:model-value="globalStore.updateMetadata('paginationColors.color', $event)"
+                />
               </div>
               <div class="flex flex-col items-start gap-2 text-gray-500">
                 <label>Active color:</label>
 
-                <ColorPicker name="color" />
+                <ColorPicker
+                  :model-value="metadata.paginationColors.active"
+                  name="color"
+                  @update:model-value="globalStore.updateMetadata('paginationColors.active', $event)"
+                />
               </div>
             </div>
           </Config>
 
-          <Config title="Enable progress">
-            <ToggleButton onLabel="On" offLabel="Off" />
-          </Config>
-
           <Config title="Margin" desc="Set margin for carousel pagination.">
             <div class="flex items-center gap-2">
-              <InputGroup v-for="item in ALL_DIRECTIONS" :key="item">
-                <InputGroupAddon> {{ item }} </InputGroupAddon>
-                <InputText type="number" class="!w-20" />
+              <InputGroup v-for="direction in ALL_DIRECTIONS" :key="direction">
+                <InputGroupAddon> {{ direction }} </InputGroupAddon>
+                <InputText
+                  :model-value="metadata.margin[direction]"
+                  type="number"
+                  class="!w-20"
+                  @update:model-value="globalStore.updateMetadata(`margin.${direction}`, $event)"
+                />
               </InputGroup>
             </div>
           </Config>

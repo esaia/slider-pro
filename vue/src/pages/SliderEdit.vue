@@ -3,9 +3,17 @@ import SliderSettingsTabs from "@/components/UI/SliderSettingsTabs.vue";
 import UploadImage from "@/components/form/UploadImage.vue";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import { useProjectStore } from "@/store/useGlobal";
+import { storeToRefs } from "pinia";
+
+const globalStore = useProjectStore();
+const { metadata } = storeToRefs(globalStore);
 </script>
 <template>
   <div class="container space-y-6">
+    <pre>
+      {{ metadata }}
+    </pre>
     <div class="flex items-center gap-3">
       <InputText placeholder="title" class="w-full" />
 

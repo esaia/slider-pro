@@ -28,7 +28,7 @@ export const useProjectStore = defineStore("project", () => {
     pagination: true,
     paginationStyle: "bullets",
     paginationColors: { color: "#ffffff", active: "#cccccc" },
-    margin: { top: 0, right: 0, down: 0, left: 0 }
+    paginationMargin: { top: 0, right: 0, down: 0, left: 0 }
   });
 
   const updateMetadata = (key: string, value: any) => {

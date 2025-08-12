@@ -166,15 +166,15 @@ const { metadata } = storeToRefs(globalStore);
             </div>
           </Config>
 
-          <Config title="Margin" desc="Set margin for carousel pagination.">
+          <Config title="Pagination margin" desc="Set margin for slider pagination.">
             <div class="flex items-center gap-2">
               <InputGroup v-for="direction in ALL_DIRECTIONS" :key="direction">
                 <InputGroupAddon> {{ direction }} </InputGroupAddon>
                 <InputText
-                  :model-value="metadata.margin[direction]"
+                  :model-value="metadata.paginationMargin[direction]"
                   type="number"
                   class="!w-20"
-                  @update:model-value="globalStore.updateMetadata(`margin.${direction}`, $event)"
+                  @update:model-value="globalStore.updateMetadata(`paginationMargin.${direction}`, $event)"
                 />
               </InputGroup>
             </div>

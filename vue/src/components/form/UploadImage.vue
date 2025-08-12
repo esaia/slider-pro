@@ -28,7 +28,6 @@ const { selectedImages, selectImage } = useSelectImage(props.multiple || false);
 const hoverIcons = [PencliIcon, TrashIcon];
 
 let swapyInstance: null | Swapy = null;
-let swapEndTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 const container = ref();
 const isModalOpen = ref(false);
@@ -80,11 +79,7 @@ const initializeSwapy = async () => {
       arr.push(findedItem);
     });
 
-    if (swapEndTimeoutId) clearTimeout(swapEndTimeoutId);
-
-    swapEndTimeoutId = setTimeout(() => {
-      data.value = arr;
-    }, 3000);
+    data.value = arr;
   });
 };
 

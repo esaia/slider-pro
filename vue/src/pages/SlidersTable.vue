@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from "primevue/button";
-import InputText from "primevue/InputText";
+import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Dialog from "primevue/dialog";

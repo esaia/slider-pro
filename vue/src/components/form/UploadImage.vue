@@ -46,10 +46,12 @@ const updateSlide = () => {
 watch(
   () => selectedImages.value,
   () => {
+    const urls = selectedImages.value?.map((img) => img.url);
+
     data.value =
-      selectedImages.value?.map((img) => {
-        const findData = data.value.find((slide) => slide.url === img.url);
-        return { ...findData, url: img.url };
+      [...new Set(urls)]?.map((url) => {
+        const findData = data.value.find((slide) => slide.url === url);
+        return { ...findData, url };
       }) || [];
   },
   {
@@ -58,7 +60,7 @@ watch(
 );
 </script>
 <template>
-  <div class="flex items-center gap-3">
+  <div class="flex flex-wrap items-center gap-3">
     <div
       class="flex size-36 cursor-pointer flex-col items-center justify-center gap-2 rounded-sm bg-green-500 transition-all hover:scale-105"
       @click="selectImage"

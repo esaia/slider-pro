@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ALL_DIRECTIONS } from "@/constants/constants";
+import { ALL_DIRECTIONS, NAVIGATION_POSITIONS, PAGINATION_STYLES } from "@/constants/constants";
 import Config from "@components/UI/Config.vue";
 import ToggleButton from "primevue/togglebutton";
 import InputText from "primevue/inputtext";
 import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import ColorPicker from "primevue/colorpicker";
+import SelectButton from "primevue/selectbutton";
+import Select from "primevue/select";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -14,7 +16,7 @@ import TabPanels from "primevue/tabpanels";
 import TabPanel from "primevue/tabpanel";
 </script>
 <template>
-  <Tabs value="2">
+  <Tabs value="0">
     <TabList>
       <Tab value="0">Autoplay</Tab>
       <Tab value="1">Navigation</Tab>
@@ -39,11 +41,47 @@ import TabPanel from "primevue/tabpanel";
           </Config>
         </div>
       </TabPanel>
-      <TabPanel value="1"> navigation </TabPanel>
+
+      <TabPanel value="1">
+        <div class="space-y-6">
+          <Config title="Navigation" desc="Enable navigation.">
+            <ToggleButton onLabel="On" offLabel="Off" />
+          </Config>
+
+          <Config title="Navigation position" desc="Select a position for the navigation arrows.">
+            <Select
+              :options="NAVIGATION_POSITIONS"
+              optionLabel="name"
+              placeholder="Select a navigation position"
+              size="small"
+              class="w-full md:w-56"
+            />
+          </Config>
+
+          <Config title="Navigation Color" desc="Set color for the slider navigation.">
+            <div class="flex items-center gap-4">
+              <div class="flex flex-col items-start gap-2 text-gray-500">
+                <label> Color:</label>
+                <ColorPicker name="color" />
+              </div>
+              <div class="flex flex-col items-start gap-2 text-gray-500">
+                <label>Active color:</label>
+
+                <ColorPicker name="color" />
+              </div>
+            </div>
+          </Config>
+        </div>
+      </TabPanel>
+
       <TabPanel value="2">
         <div class="space-y-6">
           <Config title="Enable pagination" desc="Show slider pagination.">
             <ToggleButton onLabel="On" offLabel="Off" />
+          </Config>
+
+          <Config title="Pagination Style" desc="Choose pagination style.">
+            <SelectButton :options="PAGINATION_STYLES" size="small" optionLabel="name" />
           </Config>
 
           <Config title="Pagination Color" desc="Set color for the slider pagination.">

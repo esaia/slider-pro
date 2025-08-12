@@ -13,9 +13,7 @@ import Button from "primevue/button";
     </div>
 
     <div class="bg-white shadow-sm">
-      <div
-        class="flex w-full items-center justify-between bg-gradient-to-r from-violet-600 to-indigo-600 p-4 text-white"
-      >
+      <div class="flex w-full items-center justify-between bg-gradient-to-r from-teal-300 to-teal-500 p-4 text-white">
         <div class="text-2xl">Slider Pro</div>
 
         <Button label="get support" variant="link" class="[&_span]:text-white" />

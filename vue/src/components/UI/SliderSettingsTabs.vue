@@ -10,7 +10,7 @@ import ModulesSettings from "@components/settingsTabs/ModulesSettings.vue";
 
 <template>
   <div class="w-full">
-    <Tabs value="2">
+    <Tabs value="0">
       <TabList>
         <Tab value="0">General settings</Tab>
         <Tab value="1">Style settings</Tab>

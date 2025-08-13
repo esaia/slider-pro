@@ -74,8 +74,8 @@ function slider_pro__enqueue_vue_assets($hook)
         plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.css'
     );
 
-    wp_localize_script('slider-pro-vue-js', 'irePlugin', array(
-        'nonce' => wp_create_nonce('irep_nonce'),
+    wp_localize_script('slider-pro-vue-js', 'sliderPro', array(
+        'nonce' => wp_create_nonce('slider_pro_nonce'),
         'ajax_url' => admin_url('admin-ajax.php'),
         'plugin_url' => SLIDER_PRO_PLUGIN_URL,
         'plugin_assets_path' => plugins_url('assets/', SLIDER_PRO_PLUGIN_PATH),

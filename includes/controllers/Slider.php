@@ -127,7 +127,7 @@ class SliderProAjaxHandler
      */
     private function get_slider_id($required = true)
     {
-        $slider_id = intval($_POST['slider_id'] ?? 0);
+        $slider_id = intval($_POST['sliderId'] ?? 0);
 
         if ($required && !$slider_id) {
             $this->send_error('Slider ID is required');
@@ -191,24 +191,13 @@ class SliderProAjaxHandler
 
         $data = $this->validate_slider_data();
 
-        $slider_id = $this->execute_db_operation(function () use ($data) {
-            global $wpdb;
 
-            $wpdb->insert(
-                $this->sliders_table,
-                $data,
-                ['%s', '%s', '%s']
-            );
+        $query = SliderProDb::table($this->sliders_table)->create($data);
 
-            return $wpdb->insert_id;
-        }, 'Failed to create slider');
-
-        $this->create_default_slider_meta($slider_id);
 
         $this->send_success([
             'message' => 'Slider created successfully',
-            'slider_id' => $slider_id,
-            'slider' => $this->get_slider_data($slider_id)
+            'slider_id' => $query,
         ]);
     }
 
@@ -249,15 +238,7 @@ class SliderProAjaxHandler
 
         $slider_id = $this->get_slider_id();
 
-        $this->execute_db_operation(function () use ($slider_id) {
-            global $wpdb;
-
-            // Delete meta first
-            $wpdb->delete($this->slider_metas_table, ['slider_id' => $slider_id], ['%d']);
-
-            // Delete slider
-            return $wpdb->delete($this->sliders_table, ['id' => $slider_id], ['%d']);
-        }, 'Failed to delete slider');
+        SliderProDb::table($this->sliders_table)->where('id', '=',  $slider_id)->delete();
 
         $this->send_success(['message' => 'Slider deleted successfully']);
     }
@@ -282,39 +263,14 @@ class SliderProAjaxHandler
     {
         $this->verify_request();
 
-        global $wpdb;
 
-        $filters = $this->get_list_filters();
-        $pagination = $this->get_pagination_params();
+        $page = absint($_POST['page'] ?? 1);
+        $perPage = absint($_POST['perPage'] ?? 10);
 
-        // Build query
-        $where_clause = $this->build_where_clause($filters);
+        $data = SliderProDb::table($this->sliders_table)->orderBy('created_at', "DESC")->paginate($page, $perPage);
 
-        // Get total count
-        $total = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->sliders_table} WHERE {$where_clause['clause']}",
-            $where_clause['values']
-        ));
 
-        // Get sliders
-        $query = "SELECT * FROM {$this->sliders_table} WHERE {$where_clause['clause']} ORDER BY created_at DESC LIMIT %d OFFSET %d";
-        $sliders = $wpdb->get_results($wpdb->prepare(
-            $query,
-            array_merge($where_clause['values'], [$pagination['per_page'], $pagination['offset']])
-        ));
-
-        // Add meta to each slider
-        foreach ($sliders as &$slider) {
-            $slider->meta = $this->get_slider_meta_data($slider->id);
-        }
-
-        $this->send_success([
-            'sliders' => $sliders,
-            'pagination' => array_merge($pagination, [
-                'total' => intval($total),
-                'total_pages' => ceil($total / $pagination['per_page'])
-            ])
-        ]);
+        $this->send_success($data);
     }
 
     /**
@@ -514,8 +470,7 @@ class SliderProAjaxHandler
     private function build_where_clause($filters)
     {
         global $wpdb;
-
-        $conditions = ['1=1'];
+        $conditions = [];
         $values = [];
 
         if (!empty($filters['status'])) {
@@ -529,7 +484,7 @@ class SliderProAjaxHandler
         }
 
         return [
-            'clause' => implode(' AND ', $conditions),
+            'clause' => empty($conditions) ? '1=1' : implode(' AND ', $conditions),
             'values' => $values
         ];
     }

@@ -1,76 +1,138 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Dialog from "primevue/dialog";
+import ajaxAxios from "@/utils/axios";
+import type { SlidersDataInterface } from "@/types/interfaces";
 
-const products = [
-  {
-    id: "1000",
-    name: "Slider Pro 1",
-    shortcode: "[slider-pro id='1000']",
-    date: "2023-10-01"
-  },
-  {
-    id: "1001",
-    name: "Slider Pro 2",
-    shortcode: "[slider-pro id='1001']",
-    date: "2023-10-02"
-  },
-  {
-    id: "1002",
-    name: "Slider Pro 3",
-    shortcode: "[slider-pro id='1002']",
-    date: "2023-10-03"
-  },
-  {
-    id: "1003",
-    name: "Slider Pro 4",
-    shortcode: "[slider-pro id='1003']",
-    date: "2023-10-04"
-  },
-  {
-    id: "1004",
-    name: "Slider Pro 5",
-    shortcode: "[slider-pro id='1004']",
-    date: "2023-10-05"
+const perPage = 10;
+const isCreateModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+const title = ref("");
+const errorMsg = ref("");
+const sliders = ref<SlidersDataInterface>();
+
+const activeSlideId = ref();
+
+const handleCreateSlider = async () => {
+  errorMsg.value = "";
+  try {
+    await ajaxAxios.post("", {
+      action: "slider_pro_create_slider",
+      nonce: sliderPro.nonce,
+      title: title.value
+    });
+
+    title.value = "";
+    isCreateModalOpen.value = false;
+    fetchSlides();
+  } catch (error) {
+    errorMsg.value = "something went wrong";
   }
-];
+};
 
-const isModalOpen = ref(false);
+const handleDeleteSlider = async () => {
+  errorMsg.value = "";
+
+  try {
+    await ajaxAxios.post("", {
+      action: "slider_pro_delete_slider",
+      nonce: sliderPro.nonce,
+      sliderId: activeSlideId.value
+    });
+
+    isDeleteModalOpen.value = false;
+    fetchSlides();
+  } catch (error) {
+    errorMsg.value = "something went wrong";
+  }
+};
+
+const handleClickDeleteBtn = (id: number) => {
+  activeSlideId.value = id;
+  isDeleteModalOpen.value = true;
+};
+
+const handlePageChange = (e: any) => {
+  fetchSlides((e?.page || 0) + 1);
+};
+
+const fetchSlides = async (page: number = 1) => {
+  const { data } = await ajaxAxios.post("", {
+    action: "slider_pro_get_sliders",
+    nonce: sliderPro.nonce,
+    perPage,
+    page
+  });
+
+  sliders.value = data?.data;
+  console.log("data", data);
+};
+
+onMounted(() => {
+  fetchSlides();
+});
 </script>
 
 <template>
   <div class="container">
     <div class="mb-6 flex items-center justify-between">
       <div class="text-2xl font-semibold">Slider Pro</div>
-      <Button label="Add slider" class="w-fit" @click="isModalOpen = true" />
+      <Button label="Add slider" class="w-fit" @click="isCreateModalOpen = true" />
     </div>
 
-    <DataTable :value="products" tableStyle="min-width: 50rem" removableSort>
-      <Column field="name" header="Name" sortable></Column>
+    <DataTable
+      v-if="sliders"
+      :value="sliders?.data"
+      tableStyle="min-width: 50rem"
+      removableSort
+      :paginator="sliders.total > sliders.per_page"
+      :rows="perPage"
+      :totalRecords="sliders.total"
+      lazy
+      @page="handlePageChange"
+    >
+      <Column field="title" header="Title" sortable></Column>
 
       <Column field="shortcode" header="Shortcode">
         <template #body="slotProps">
-          <InputText type="text" :value="slotProps.data.shortcode" />
+          <InputText type="text" :value="`[slider-pro id='${slotProps.data.id}']`" />
         </template>
       </Column>
 
-      <Column field="date" header="Date" sortable></Column>
+      <Column field="created_at" header="Date" sortable></Column>
       <Column header="Action">
-        <template #body>
+        <template #body="slotProps">
           <Button label="Open" class="w-fit" variant="text" size="small" />
+          <Button
+            label="Delete"
+            class="w-fit"
+            variant="text"
+            severity="danger"
+            size="small"
+            @click="handleClickDeleteBtn(slotProps.data.id)"
+          />
         </template>
       </Column>
     </DataTable>
   </div>
 
-  <Dialog v-model:visible="isModalOpen" modal header="Create Slider" :style="{ width: '25rem' }">
+  <Dialog v-model:visible="isCreateModalOpen" modal header="Create Slider" :style="{ width: '25rem' }">
     <div>
-      <InputText placeholder="title" class="w-full" />
-      <Button label="Create" class="mt-4 w-full" />
+      <InputText v-model="title" placeholder="title" class="w-full" />
+      <Button label="Create" class="mt-4 w-full" @click="handleCreateSlider" />
+      <p v-if="errorMsg" class="p-2 font-semibold text-red-500">{{ errorMsg }}</p>
+    </div>
+  </Dialog>
+
+  <Dialog v-model:visible="isDeleteModalOpen" modal header="Create Slider" :style="{ width: '25rem' }">
+    <div>
+      <p>Are you sure to delete slider with id {{ activeSlideId }}</p>
+      <Button label="Delete" class="mt-4 w-full" severity="danger" @click="handleDeleteSlider" />
+      <p v-if="errorMsg" class="p-2 font-semibold text-red-500">{{ errorMsg }}</p>
     </div>
   </Dialog>
 </template>

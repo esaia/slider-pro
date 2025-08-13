@@ -17,6 +17,15 @@ define('SLIDER_PRO_PLUGIN_PATH', __FILE__);
 define('SLIDER_PRO_PLUGIN_URL', admin_url('admin.php?page=slider-pro'));
 
 
+function dd($data): void
+{
+    error_log(print_r($data, true));
+    die();
+}
+
+
+
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/migrations.php';
+require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/Db.php';
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/init.php';
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/api.php';

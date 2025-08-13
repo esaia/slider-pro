@@ -6,6 +6,6 @@ import SlidersTable from "@/pages/SlidersTable.vue";
 <template>
   <div>
     <SlidersTable />
-    <SliderEdit />
+    <!-- <SliderEdit /> -->
   </div>
 </template>

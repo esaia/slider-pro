@@ -47,13 +47,19 @@ const handleUpdateSlider = async () => {
 </script>
 <template>
   <div class="container space-y-6">
-    <pre>
-      {{ metadata }}
-    </pre>
-    <div class="flex items-center gap-3">
-      <InputText v-model="title" placeholder="title" class="w-full" />
+    <div>
+      <a :href="`${sliderPro.plugin_url}`">
+        <Button label="Back to sliders list" variant="link" class="mb-2 w-fit !p-0" />
+      </a>
 
-      <Button label="Save" class="w-fit" :loading="loading" @click="handleUpdateSlider" />
+      <div class="flex items-center gap-3">
+        <InputText v-model="title" placeholder="title" class="w-full" />
+
+        <span>shortcode:</span>
+        <InputText type="text" :value="`[slider-pro id='${activeSlider?.id}']`" />
+
+        <Button label="Save" class="w-32" :loading="loading" @click="handleUpdateSlider" />
+      </div>
     </div>
 
     <div class="bg-white shadow-sm">

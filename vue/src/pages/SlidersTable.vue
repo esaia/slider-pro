@@ -138,7 +138,7 @@ onMounted(() => {
     </div>
   </Dialog>
 
-  <Dialog v-model:visible="isDeleteModalOpen" modal header="Create Slider" :style="{ width: '25rem' }">
+  <Dialog v-model:visible="isDeleteModalOpen" modal header="Delete Slider" :style="{ width: '25rem' }">
     <div>
       <p>Are you sure to delete slider with id {{ activeSlideId }}</p>
       <Button label="Delete" class="mt-4 w-full" severity="danger" @click="handleDeleteSlider" />

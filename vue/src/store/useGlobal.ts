@@ -1,6 +1,6 @@
 import type { Slide, SlidersDataInterface } from "@/types/interfaces";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 export const useGlobalStore = defineStore("global", () => {
   const sliders = ref<SlidersDataInterface>();
@@ -65,9 +65,19 @@ export const useGlobalStore = defineStore("global", () => {
         return i.id === activeSlider.value?.id ? { ...i, slides } : i;
       });
     }
-
-    // activeSlider.value;
   };
+
+  watch(
+    () => activeSlider.value,
+    () => {
+      if (activeSlider.value?.meta) {
+        metadata.value = activeSlider.value?.meta;
+      }
+    },
+    {
+      deep: true
+    }
+  );
 
   return {
     // State

@@ -49,9 +49,7 @@ class SliderProAjaxHandler
             'get_sliders' => 'get_sliders',
 
             // Slider Meta operations
-            'update_slider_meta' => 'update_slider_meta',
-            'get_slider_meta' => 'get_slider_meta',
-            'delete_slider_meta' => 'delete_slider_meta',
+            'update_slider_meta_bulk' => 'update_slider_meta_bulk',
 
         ];
 
@@ -146,25 +144,7 @@ class SliderProAjaxHandler
         return compact('title', 'slides', 'status');
     }
 
-    /**
-     * Execute database operation with error handling
-     * 
-     * @param callable $callback Database operation callback
-     * @param string $error_message Error message on failure
-     * @return mixed Result of the callback
-     */
-    private function execute_db_operation($callback, $error_message = 'Database operation failed')
-    {
-        global $wpdb;
 
-        $result = $callback();
-
-        if ($result === false) {
-            $this->send_error($error_message . ': ' . $wpdb->last_error, 500);
-        }
-
-        return $result;
-    }
 
     /**
      * Create a new slider
@@ -258,77 +238,52 @@ class SliderProAjaxHandler
         $this->send_success($data);
     }
 
+
+
     /**
-     * Update slider meta
+     * Update slider meta bulk
      */
-    public function update_slider_meta()
+    public function update_slider_meta_bulk()
     {
         $this->verify_request();
 
         $slider_id = $this->get_slider_id();
-        $meta_key = sanitize_text_field($_POST['meta_key'] ?? '');
-        $meta_value = wp_unslash($_POST['meta_value'] ?? '');
+        $meta = $_POST['meta'] ?? [];
 
-        if (empty($meta_key)) {
-            $this->send_error('Meta key is required');
+        if (empty($meta) || !is_array($meta)) {
+            $this->send_error('Invalid meta data provided');
         }
 
-        $this->upsert_slider_meta($slider_id, $meta_key, $meta_value);
+        global $wpdb;
+        $wpdb->query('START TRANSACTION');
 
-        $this->send_success(['message' => 'Slider meta updated successfully']);
+        try {
+            foreach ($meta as $meta_key => $meta_value) {
+                $this->upsert_slider_meta($slider_id, $meta_key, $meta_value);
+            }
+
+            $wpdb->query('COMMIT');
+            $this->send_success(['message' => 'Bulk meta updated successfully']);
+        } catch (Exception $e) {
+            $wpdb->query('ROLLBACK');
+            $this->send_error('Failed to update bulk meta: ' . $e->getMessage());
+        }
     }
+
+
 
     /**
      * Get slider meta
      */
-    public function get_slider_meta()
+    public function get_slider_meta($id = null)
     {
         $this->verify_request();
-
-        $slider_id = $this->get_slider_id();
-        $meta_key = sanitize_text_field($_POST['meta_key'] ?? '');
-
-        if ($meta_key) {
-            $meta_value = $this->get_slider_meta_value($slider_id, $meta_key);
-            $this->send_success([
-                'meta_key' => $meta_key,
-                'meta_value' => $meta_value
-            ]);
-        } else {
-            $meta_data = $this->get_slider_meta_data($slider_id);
-            $this->send_success(['meta' => $meta_data]);
-        }
-    }
-
-    /**
-     * Delete slider meta
-     */
-    public function delete_slider_meta()
-    {
-        $this->verify_request();
-
-        $slider_id = $this->get_slider_id();
-        $meta_key = sanitize_text_field($_POST['meta_key'] ?? '');
-
-        if (empty($meta_key)) {
-            $this->send_error('Meta key is required');
-        }
-
-        $this->execute_db_operation(function () use ($slider_id, $meta_key) {
-            global $wpdb;
-
-            return $wpdb->delete(
-                $this->slider_metas_table,
-                ['slider_id' => $slider_id, 'meta_key' => $meta_key],
-                ['%d', '%s']
-            );
-        }, 'Failed to delete slider meta');
-
-        $this->send_success(['message' => 'Slider meta deleted successfully']);
+        $slider_id = $id ?? $this->get_slider_id();
+        $meta_data = $this->get_slider_meta_data($slider_id);
+        return $meta_data;
     }
 
 
-    // Helper Methods
 
     /**
      * Check if slider exists
@@ -338,37 +293,14 @@ class SliderProAjaxHandler
      */
     private function slider_exists($slider_id)
     {
-        global $wpdb;
-
-        $count = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->sliders_table} WHERE id = %d",
-            $slider_id
-        ));
+        $count = SliderProDb::table($this->sliders_table)
+            ->where('id', '=', $slider_id)
+            ->count();
 
         return $count > 0;
     }
 
-    /**
-     * Get slider data with meta
-     * 
-     * @param int $slider_id Slider ID
-     * @return object|null Slider data
-     */
-    private function get_slider_data($slider_id)
-    {
-        global $wpdb;
 
-        $slider = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->sliders_table} WHERE id = %d",
-            $slider_id
-        ));
-
-        if ($slider) {
-            $slider->meta = $this->get_slider_meta_data($slider_id);
-        }
-
-        return $slider;
-    }
 
     /**
      * Get slider meta data as associative array
@@ -378,41 +310,25 @@ class SliderProAjaxHandler
      */
     private function get_slider_meta_data($slider_id)
     {
-        global $wpdb;
+        $metas = SliderProDb::table($this->slider_metas_table)
+            ->where('slider_id', '=', $slider_id)
+            ->get();
 
-        $meta_rows = $wpdb->get_results($wpdb->prepare(
-            "SELECT meta_key, meta_value FROM {$this->slider_metas_table} WHERE slider_id = %d",
-            $slider_id
-        ));
+        $formatted_metas = [];
 
-        $meta_data = [];
-        foreach ($meta_rows as $meta_row) {
-            $meta_data[$meta_row->meta_key] = $meta_row->meta_value;
+        foreach ($metas as $meta) {
+            $value = $meta->meta_value;
+
+            // Try to decode JSON values
+            $decoded = json_decode($value, true);
+
+            // Store the decoded value if valid JSON, otherwise keep original
+            $formatted_metas[$meta->meta_key] = (json_last_error() === JSON_ERROR_NONE) ? $decoded : $value;
         }
 
-        return $meta_data;
+        return $formatted_metas;
     }
 
-    /**
-     * Get specific slider meta value
-     * 
-     * @param int $slider_id Slider ID
-     * @param string $meta_key Meta key
-     * @param mixed $default Default value
-     * @return mixed Meta value
-     */
-    private function get_slider_meta_value($slider_id, $meta_key, $default = '')
-    {
-        global $wpdb;
-
-        $meta_value = $wpdb->get_var($wpdb->prepare(
-            "SELECT meta_value FROM {$this->slider_metas_table} WHERE slider_id = %d AND meta_key = %s",
-            $slider_id,
-            $meta_key
-        ));
-
-        return $meta_value !== null ? $meta_value : $default;
-    }
 
     /**
      * Insert or update slider meta (upsert)
@@ -423,54 +339,36 @@ class SliderProAjaxHandler
      */
     private function upsert_slider_meta($slider_id, $meta_key, $meta_value)
     {
-        global $wpdb;
 
-        $existing = $wpdb->get_var($wpdb->prepare(
-            "SELECT meta_id FROM {$this->slider_metas_table} WHERE slider_id = %d AND meta_key = %s",
-            $slider_id,
-            $meta_key
-        ));
+        $existing = SliderProDb::table($this->slider_metas_table)
+            ->where('slider_id', '=', $slider_id)
+            ->where('meta_key', '=', $meta_key)
+            ->get();
+
+
+        if ($meta_value && is_array($meta_value)) {
+            $meta_value = wp_json_encode($meta_value);
+        }
 
         if ($existing) {
-            $this->execute_db_operation(function () use ($meta_value, $slider_id, $meta_key) {
-                global $wpdb;
+            $data = ['meta_value' => $meta_value];
 
-                return $wpdb->update(
-                    $this->slider_metas_table,
-                    ['meta_value' => $meta_value],
-                    ['slider_id' => $slider_id, 'meta_key' => $meta_key],
-                    ['%s'],
-                    ['%d', '%s']
-                );
-            }, 'Failed to update slider meta');
+            SliderProDb::table($this->slider_metas_table)
+                ->where('slider_id', '=', $slider_id)
+                ->where('meta_key', '=', $meta_key)
+                ->update($data);
         } else {
-            $this->execute_db_operation(function () use ($slider_id, $meta_key, $meta_value) {
-                global $wpdb;
+            $data = [
+                'slider_id' => $slider_id,
+                'meta_key' => $meta_key,
+                'meta_value' => $meta_value
+            ];
 
-                return $wpdb->insert(
-                    $this->slider_metas_table,
-                    [
-                        'slider_id' => $slider_id,
-                        'meta_key' => $meta_key,
-                        'meta_value' => $meta_value
-                    ],
-                    ['%d', '%s', '%s']
-                );
-            }, 'Failed to insert slider meta');
+            SliderProDb::table($this->slider_metas_table)
+                ->create($data);
         }
     }
 
-    /**
-     * Validate JSON string
-     * 
-     * @param string $string JSON string to validate
-     * @return bool
-     */
-    private function is_valid_json($string)
-    {
-        json_decode($string);
-        return json_last_error() === JSON_ERROR_NONE;
-    }
 
 
 
@@ -482,6 +380,12 @@ class SliderProAjaxHandler
         } else {
             $item['slides'] = [];
         }
+
+
+        $meta = $this->get_slider_meta($item['id']);
+
+        $item['meta'] = $meta;
+
         return $item;
     }
 }

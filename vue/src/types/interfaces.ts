@@ -58,6 +58,46 @@ interface Nonces {
   edit: string;
 }
 
+export interface Meta {
+  slideEffect: string;
+  columns: Columns;
+  spaceBetween: number;
+  clickAction: string;
+  orderBy: string;
+  infiniteLoop: boolean;
+  sliderDirection: string;
+  autoplay: boolean;
+  sliderSpeed: number;
+  sliderOrientation: string;
+  pauseonhover: boolean;
+  navigation: boolean;
+  navigationPosition: string;
+  navigationColors: NavigationColors;
+  pagination: boolean;
+  paginationStyle: string;
+  paginationColors: NavigationColors;
+  paginationMargin: PaginationMargin;
+}
+
+interface PaginationMargin {
+  top: number;
+  right: number;
+  down: number;
+  left: number;
+}
+
+interface NavigationColors {
+  color: string;
+  active: string;
+}
+
+interface Columns {
+  desktop: number;
+  laptop: number;
+  tablet: number;
+  mobile: number;
+}
+
 export interface SlidersDataInterface {
   data: Slider[];
   page: number;
@@ -69,6 +109,7 @@ export interface Slider {
   id: number;
   title: string;
   slides: Slide[];
+  meta: Meta;
   created_at: string;
   updated_at: string;
 }

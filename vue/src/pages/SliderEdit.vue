@@ -3,7 +3,7 @@ import SliderSettingsTabs from "@/components/UI/SliderSettingsTabs.vue";
 import UploadImage from "@/components/form/UploadImage.vue";
 import { useGlobalStore } from "@/store/useGlobal";
 import { storeToRefs } from "pinia";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import ajaxAxios from "@/utils/axios";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -27,6 +27,13 @@ const handleUpdateSlider = async () => {
       sliderId: activeSlider.value?.id,
       title: title.value,
       slides: activeSlider.value?.slides
+    });
+
+    await ajaxAxios.post("", {
+      action: "slider_pro_update_slider_meta_bulk",
+      nonce: sliderPro.nonce,
+      sliderId: activeSlider.value?.id,
+      meta: metadata.value
     });
 
     toast.add({ severity: "success", summary: "Slider updated", detail: "", group: "br", life: 3000 });

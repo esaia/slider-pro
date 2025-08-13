@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
  *
  * This function creates a top-level menu for the plugin in the admin sidebar.
  */
-function slider_pro_add_admin_menu()
+function slider_pro__add_admin_menu()
 {
     // Add a top-level menu page for the plugin
     add_menu_page(
@@ -19,13 +19,13 @@ function slider_pro_add_admin_menu()
         'Slider Pro',       // The text displayed in the menu
         'manage_options',   // The capability required for access (only users with 'manage_options' can see it)
         'slider-pro',       // The unique slug for the menu page
-        'slider_pro_render_page', // The callback function that renders the page content
+        'slider_pro__render_page', // The callback function that renders the page content
         'dashicons-slides', // The icon for the menu item (a building icon)
         100                 // The position of the menu item in the admin menu (higher numbers push it lower)
     );
 }
 
-add_action('admin_menu', 'slider_pro_add_admin_menu');
+add_action('admin_menu', 'slider_pro__add_admin_menu');
 
 
 
@@ -34,7 +34,7 @@ add_action('admin_menu', 'slider_pro_add_admin_menu');
  *
  * This function is called when the user clicks on the 'building svg' menu item in the admin sidebar.
  */
-function slider_pro_render_page()
+function slider_pro__render_page()
 {
     // Include the template file that will generate the admin page content
     include_once plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . './templates/index.php';
@@ -48,7 +48,7 @@ function slider_pro_render_page()
  * This function is used both for the admin area and the frontend.
  * It checks if the scripts/styles are already loaded before enqueuing them again.
  */
-function slider_pro_enqueue_vue_assets($hook)
+function slider_pro__enqueue_vue_assets($hook)
 {
     if ($hook !== 'toplevel_page_slider-pro') return;
 
@@ -82,7 +82,7 @@ function slider_pro_enqueue_vue_assets($hook)
     ));
 }
 
-add_action('admin_enqueue_scripts', 'slider_pro_enqueue_vue_assets', 5);
+add_action('admin_enqueue_scripts', 'slider_pro__enqueue_vue_assets', 5);
 
 
 
@@ -95,7 +95,7 @@ add_action('admin_enqueue_scripts', 'slider_pro_enqueue_vue_assets', 5);
  *
  * @return string Modified script tag with 'module' type and 'defer' attribute.
  */
-function irep_force_module_type_attribute($tag, $handle)
+function slider_pro___force_module_type_attribute($tag, $handle)
 {
     if ($handle === 'slider-pro-vue-js') {
         $script_url = plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.js';
@@ -107,4 +107,4 @@ function irep_force_module_type_attribute($tag, $handle)
 }
 
 
-add_filter('script_loader_tag', 'irep_force_module_type_attribute', 10, 2);
+add_filter('script_loader_tag', 'slider_pro___force_module_type_attribute', 10, 2);

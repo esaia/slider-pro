@@ -6,15 +6,19 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Dialog from "primevue/dialog";
 import ajaxAxios from "@/utils/axios";
-import type { SlidersDataInterface } from "@/types/interfaces";
+import { useGlobalStore } from "@/store/useGlobal";
+import { storeToRefs } from "pinia";
+
+const globalStore = useGlobalStore();
+const { sliders } = storeToRefs(globalStore);
 
 const perPage = 10;
+
 const isCreateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const title = ref("");
 const errorMsg = ref("");
-const sliders = ref<SlidersDataInterface>();
-
+const loading = ref(true);
 const activeSlideId = ref();
 
 const handleCreateSlider = async () => {
@@ -61,6 +65,7 @@ const handlePageChange = (e: any) => {
 };
 
 const fetchSlides = async (page: number = 1) => {
+  loading.value = true;
   const { data } = await ajaxAxios.post("", {
     action: "slider_pro_get_sliders",
     nonce: sliderPro.nonce,
@@ -68,8 +73,9 @@ const fetchSlides = async (page: number = 1) => {
     page
   });
 
-  sliders.value = data?.data;
-  console.log("data", data);
+  loading.value = false;
+
+  globalStore.setSliders(data?.data);
 };
 
 onMounted(() => {
@@ -78,7 +84,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div v-if="loading">LOADING</div>
+  <div v-else>
     <div class="mb-6 flex items-center justify-between">
       <div class="text-2xl font-semibold">Slider Pro</div>
       <Button label="Add slider" class="w-fit" @click="isCreateModalOpen = true" />
@@ -106,7 +113,10 @@ onMounted(() => {
       <Column field="created_at" header="Date" sortable></Column>
       <Column header="Action">
         <template #body="slotProps">
-          <Button label="Open" class="w-fit" variant="text" size="small" />
+          <a :href="`${sliderPro.plugin_url}&slider=${slotProps.data.id}`">
+            <Button label="Open" class="w-fit" variant="text" size="small" />
+          </a>
+
           <Button
             label="Delete"
             class="w-fit"

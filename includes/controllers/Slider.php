@@ -21,19 +21,6 @@ class SliderProAjaxHandler
     private $sliders_table;
     private $slider_metas_table;
 
-    /**
-     * Default meta values for new sliders
-     */
-    private $default_meta = [
-        'width' => '800',
-        'height' => '400',
-        'autoplay' => 'true',
-        'autoplay_delay' => '3000',
-        'show_navigation' => 'true',
-        'show_pagination' => 'true',
-        'transition_effect' => 'slide',
-        'transition_duration' => '500'
-    ];
 
     /**
      * Constructor - Initialize AJAX hooks and table names
@@ -66,9 +53,6 @@ class SliderProAjaxHandler
             'get_slider_meta' => 'get_slider_meta',
             'delete_slider_meta' => 'delete_slider_meta',
 
-            // Bulk operations
-            'bulk_delete_sliders' => 'bulk_delete_sliders',
-            'duplicate_slider' => 'duplicate_slider',
         ];
 
         foreach ($ajax_actions as $action => $method) {
@@ -148,15 +132,15 @@ class SliderProAjaxHandler
     private function validate_slider_data()
     {
         $title = sanitize_text_field($_POST['title'] ?? '');
-        $slides = wp_unslash($_POST['slides'] ?? '[]');
+        $slides = wp_unslash($_POST['slides'] ?? []);
         $status = sanitize_text_field($_POST['status'] ?? 'active');
 
         if (empty($title)) {
             $this->send_error('Title is required');
         }
 
-        if (!$this->is_valid_json($slides)) {
-            $this->send_error('Invalid slides data format');
+        if ($slides) {
+            $slides = wp_json_encode($slides);
         }
 
         return compact('title', 'slides', 'status');
@@ -211,21 +195,10 @@ class SliderProAjaxHandler
         $slider_id = $this->get_slider_id();
         $data = $this->validate_slider_data();
 
-        $this->execute_db_operation(function () use ($data, $slider_id) {
-            global $wpdb;
-
-            return $wpdb->update(
-                $this->sliders_table,
-                $data,
-                ['id' => $slider_id],
-                ['%s', '%s', '%s'],
-                ['%d']
-            );
-        }, 'Failed to update slider');
+        SliderProDb::table($this->sliders_table)->where('id', '=',  $slider_id)->update($data);
 
         $this->send_success([
             'message' => 'Slider updated successfully',
-            'slider' => $this->get_slider_data($slider_id)
         ]);
     }
 
@@ -251,9 +224,15 @@ class SliderProAjaxHandler
         $this->verify_request();
 
         $slider_id = $this->get_slider_id();
-        $slider = $this->get_slider_data($slider_id);
 
-        $this->send_success(['slider' => $slider]);
+        $slide = SliderProDb::table($this->sliders_table)->find($slider_id);
+
+        if ($slide) {
+            $slide = $this->map_slider_data($slide);
+        }
+
+
+        $this->send_success($slide);
     }
 
     /**
@@ -268,6 +247,12 @@ class SliderProAjaxHandler
         $perPage = absint($_POST['perPage'] ?? 10);
 
         $data = SliderProDb::table($this->sliders_table)->orderBy('created_at', "DESC")->paginate($page, $perPage);
+
+
+        if ($data) {
+            $data['data'] = array_map([$this, 'map_slider_data'], $data['data']);
+        }
+
 
 
         $this->send_success($data);
@@ -342,152 +327,8 @@ class SliderProAjaxHandler
         $this->send_success(['message' => 'Slider meta deleted successfully']);
     }
 
-    /**
-     * Bulk delete sliders
-     */
-    public function bulk_delete_sliders()
-    {
-        $this->verify_request();
-
-        $slider_ids = array_map('intval', $_POST['slider_ids'] ?? []);
-
-        if (empty($slider_ids)) {
-            $this->send_error('No slider IDs provided');
-        }
-
-        $result = $this->execute_db_operation(function () use ($slider_ids) {
-            global $wpdb;
-
-            $placeholders = implode(',', array_fill(0, count($slider_ids), '%d'));
-
-            // Delete meta first
-            $wpdb->query($wpdb->prepare(
-                "DELETE FROM {$this->slider_metas_table} WHERE slider_id IN ($placeholders)",
-                $slider_ids
-            ));
-
-            // Delete sliders
-            return $wpdb->query($wpdb->prepare(
-                "DELETE FROM {$this->sliders_table} WHERE id IN ($placeholders)",
-                $slider_ids
-            ));
-        }, 'Failed to delete sliders');
-
-        $this->send_success([
-            'message' => 'Sliders deleted successfully',
-            'deleted_count' => $result
-        ]);
-    }
-
-    /**
-     * Duplicate slider
-     */
-    public function duplicate_slider()
-    {
-        $this->verify_request();
-
-        $slider_id = $this->get_slider_id();
-        $original_slider = $this->get_slider_data($slider_id);
-
-        $new_slider_id = $this->execute_db_operation(function () use ($original_slider) {
-            global $wpdb;
-
-            $wpdb->insert(
-                $this->sliders_table,
-                [
-                    'title' => 'Copy of ' . $original_slider->title,
-                    'slides' => $original_slider->slides,
-                    'status' => 'draft'
-                ],
-                ['%s', '%s', '%s']
-            );
-
-            return $wpdb->insert_id;
-        }, 'Failed to duplicate slider');
-
-        $this->duplicate_slider_meta($slider_id, $new_slider_id);
-
-        $this->send_success([
-            'message' => 'Slider duplicated successfully',
-            'new_slider_id' => $new_slider_id,
-            'slider' => $this->get_slider_data($new_slider_id)
-        ]);
-    }
-
-    /**
-     * Get slider for public access (frontend)
-     */
-    public function get_slider_public()
-    {
-        $slider_id = $this->get_slider_id();
-        $slider = $this->get_slider_data($slider_id);
-
-        if (!$slider || $slider->status !== 'active') {
-            $this->send_error('Slider not found or not active', 404);
-        }
-
-        $this->send_success(['slider' => $slider]);
-    }
 
     // Helper Methods
-
-    /**
-     * Get list filters from request
-     * 
-     * @return array Sanitized filters
-     */
-    private function get_list_filters()
-    {
-        return [
-            'status' => sanitize_text_field($_POST['status'] ?? ''),
-            'search' => sanitize_text_field($_POST['search'] ?? '')
-        ];
-    }
-
-    /**
-     * Get pagination parameters from request
-     * 
-     * @return array Pagination parameters
-     */
-    private function get_pagination_params()
-    {
-        $page = max(1, intval($_POST['page'] ?? 1));
-        $per_page = max(1, min(100, intval($_POST['per_page'] ?? 10))); // Limit max per_page
-
-        return [
-            'page' => $page,
-            'per_page' => $per_page,
-            'offset' => ($page - 1) * $per_page
-        ];
-    }
-
-    /**
-     * Build WHERE clause for filtering
-     * 
-     * @param array $filters Filter parameters
-     * @return array WHERE clause and values
-     */
-    private function build_where_clause($filters)
-    {
-        global $wpdb;
-        $conditions = [];
-        $values = [];
-
-        if (!empty($filters['status'])) {
-            $conditions[] = 'status = %s';
-            $values[] = $filters['status'];
-        }
-
-        if (!empty($filters['search'])) {
-            $conditions[] = 'title LIKE %s';
-            $values[] = '%' . $wpdb->esc_like($filters['search']) . '%';
-        }
-
-        return [
-            'clause' => empty($conditions) ? '1=1' : implode(' AND ', $conditions),
-            'values' => $values
-        ];
-    }
 
     /**
      * Check if slider exists
@@ -631,56 +472,17 @@ class SliderProAjaxHandler
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-    /**
-     * Generate unique slug for slider
-     * 
-     * @param string $title Slider title
-     * @return string Unique slug
-     */
-    private function generate_unique_slug($title)
+
+
+    private function map_slider_data($item)
     {
-        global $wpdb;
-
-        $base_slug = sanitize_title($title);
-        $slug = $base_slug;
-        $counter = 1;
-
-        while ($wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->sliders_table} WHERE slug = %s",
-            $slug
-        )) > 0) {
-            $slug = $base_slug . '-' . $counter;
-            $counter++;
+        $item = (array) $item;
+        if (!empty($item['slides'])) {
+            $item['slides'] = json_decode($item['slides'], true);
+        } else {
+            $item['slides'] = [];
         }
-
-        return $slug;
-    }
-
-    /**
-     * Create default slider meta for new slider
-     * 
-     * @param int $slider_id Slider ID
-     */
-    private function create_default_slider_meta($slider_id)
-    {
-        foreach ($this->default_meta as $key => $value) {
-            $this->upsert_slider_meta($slider_id, $key, $value);
-        }
-    }
-
-    /**
-     * Duplicate slider meta from one slider to another
-     * 
-     * @param int $original_slider_id Original slider ID
-     * @param int $new_slider_id New slider ID
-     */
-    private function duplicate_slider_meta($original_slider_id, $new_slider_id)
-    {
-        $original_meta = $this->get_slider_meta_data($original_slider_id);
-
-        foreach ($original_meta as $key => $value) {
-            $this->upsert_slider_meta($new_slider_id, $key, $value);
-        }
+        return $item;
     }
 }
 

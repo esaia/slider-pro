@@ -1,7 +1,10 @@
+import type { Slide, SlidersDataInterface } from "@/types/interfaces";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
-export const useProjectStore = defineStore("project", () => {
+export const useGlobalStore = defineStore("global", () => {
+  const sliders = ref<SlidersDataInterface>();
+
   const metadata = ref<any>({
     // General settings
     slideEffect: "fade",
@@ -31,6 +34,16 @@ export const useProjectStore = defineStore("project", () => {
     paginationMargin: { top: 0, right: 0, down: 0, left: 0 }
   });
 
+  const activeSlider = computed(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    const sliderId = ref(params.get("slider"));
+
+    if (!sliderId) return;
+
+    return sliders.value?.data.find((i) => i.id.toString() === sliderId.value?.toString());
+  });
+
   const updateMetadata = (key: string, value: any) => {
     const [parent, child] = key.split(".");
     if (child && Object.prototype.hasOwnProperty.call(metadata.value[parent], child)) {
@@ -42,8 +55,29 @@ export const useProjectStore = defineStore("project", () => {
     }
   };
 
+  const setSliders = (sliderParam: SlidersDataInterface) => {
+    sliders.value = sliderParam;
+  };
+
+  const setSlides = (slides: Slide[]) => {
+    if (sliders.value && sliders.value.data) {
+      sliders.value.data = sliders.value.data.map((i) => {
+        return i.id === activeSlider.value?.id ? { ...i, slides } : i;
+      });
+    }
+
+    // activeSlider.value;
+  };
+
   return {
+    // State
+    sliders,
     metadata,
-    updateMetadata
+    // Geter
+    activeSlider,
+    // Setters
+    updateMetadata,
+    setSliders,
+    setSlides
   };
 });

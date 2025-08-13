@@ -8,10 +8,10 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import SelectButton from "primevue/selectbutton";
 
-import { useProjectStore } from "@/store/useGlobal";
+import { useGlobalStore } from "@/store/useGlobal";
 import { storeToRefs } from "pinia";
 
-const globalStore = useProjectStore();
+const globalStore = useGlobalStore();
 const { metadata } = storeToRefs(globalStore);
 </script>
 <template>

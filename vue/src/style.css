@@ -6,5 +6,5 @@
 }
 
 .container {
-  @apply p-4 pl-0;
+  @apply !max-w-[unset] p-4 pl-0;
 }

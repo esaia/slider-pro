@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { useGlobalStore } from "@/store/useGlobal";
 import { useSelectImage } from "@/composables/useSelectImage";
 import TrashIcon from "@/components/icons/TrashIcon.vue";
 import GalleryIcon from "@/components/icons/GalleryIcon.vue";
@@ -10,12 +11,8 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
-
-interface Image {
-  url: string;
-  title?: string;
-  description?: string;
-}
+import type { Slide } from "@/types/interfaces";
+import { storeToRefs } from "pinia";
 
 const props = defineProps<{
   title: string;
@@ -23,6 +20,8 @@ const props = defineProps<{
   multiple?: boolean;
 }>();
 
+const globalStore = useGlobalStore();
+const { activeSlider } = storeToRefs(globalStore);
 const { selectedImages, selectImage } = useSelectImage(props.multiple || false);
 
 const hoverIcons = [PencliIcon, TrashIcon];
@@ -31,8 +30,8 @@ let swapyInstance: null | Swapy = null;
 
 const container = ref();
 const isModalOpen = ref(false);
-const data = ref<Image[]>([]);
-const activeSlide = ref<Image | null>(null);
+const data = ref<Slide[]>(activeSlider.value?.slides || []);
+const activeSlide = ref<Slide | null>(null);
 
 const handleClickIcon = (index: number, img: string) => {
   if (index === 0) {
@@ -54,13 +53,11 @@ const updateSlide = () => {
   activeSlide.value = null;
 };
 
-const initializeSwapy = async () => {
+const initializeSwapy = () => {
   if (swapyInstance) {
     swapyInstance.destroy();
     swapyInstance = null;
   }
-
-  await nextTick();
 
   if (!container.value || data.value.length === 0) return;
 
@@ -70,15 +67,12 @@ const initializeSwapy = async () => {
 
   swapyInstance.onSwapEnd((event) => {
     const sortedImgUrls = Object.values(event.slotItemMap.asObject);
-
     const arr: any = [];
-
     sortedImgUrls.forEach((url) => {
       const findedItem = data.value.find((i) => i.url === url);
       if (!findedItem) return;
       arr.push(findedItem);
     });
-
     data.value = arr;
   });
 };
@@ -103,17 +97,21 @@ watch(
 watch(
   () => data.value,
   () => {
+    if (data.value) {
+      globalStore.setSlides(data.value);
+    }
     initializeSwapy();
   },
   {
     deep: true,
-
     flush: "post" // Ensure DOM updates are complete
   }
 );
 
 onMounted(() => {
   initializeSwapy();
+  // @ts-ignore
+  selectedImages.value = data.value;
 });
 </script>
 

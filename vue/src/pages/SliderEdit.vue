@@ -1,13 +1,42 @@
 <script setup lang="ts">
 import SliderSettingsTabs from "@/components/UI/SliderSettingsTabs.vue";
 import UploadImage from "@/components/form/UploadImage.vue";
+import { useGlobalStore } from "@/store/useGlobal";
+import { storeToRefs } from "pinia";
+import { reactive, ref } from "vue";
+import ajaxAxios from "@/utils/axios";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import { useProjectStore } from "@/store/useGlobal";
-import { storeToRefs } from "pinia";
+import { useToast } from "primevue/usetoast";
 
-const globalStore = useProjectStore();
-const { metadata } = storeToRefs(globalStore);
+const toast = useToast();
+
+const globalStore = useGlobalStore();
+const { metadata, activeSlider } = storeToRefs(globalStore);
+
+const title = ref(activeSlider.value?.title || "");
+
+const loading = ref(false);
+
+const handleUpdateSlider = async () => {
+  try {
+    loading.value = true;
+    await ajaxAxios.post("", {
+      action: "slider_pro_update_slider",
+      nonce: sliderPro.nonce,
+      sliderId: activeSlider.value?.id,
+      title: title.value,
+      slides: activeSlider.value?.slides
+    });
+
+    toast.add({ severity: "success", summary: "Slider updated", detail: "", group: "br", life: 3000 });
+  } catch (error) {
+    console.error("ERROR", error);
+    toast.add({ severity: "error", summary: "Something went wrong", detail: "", group: "br", life: 3000 });
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 <template>
   <div class="container space-y-6">
@@ -15,9 +44,9 @@ const { metadata } = storeToRefs(globalStore);
       {{ metadata }}
     </pre>
     <div class="flex items-center gap-3">
-      <InputText placeholder="title" class="w-full" />
+      <InputText v-model="title" placeholder="title" class="w-full" />
 
-      <Button label="Save" class="w-fit" />
+      <Button label="Save" class="w-fit" :loading="loading" @click="handleUpdateSlider" />
     </div>
 
     <div class="bg-white shadow-sm">

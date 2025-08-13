@@ -66,8 +66,15 @@ export interface SlidersDataInterface {
 }
 
 export interface Slider {
+  id: number;
   title: string;
-  slides: object;
+  slides: Slide[];
   created_at: string;
   updated_at: string;
+}
+
+export interface Slide {
+  url: string;
+  title?: string;
+  description?: string;
 }

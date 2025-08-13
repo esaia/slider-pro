@@ -70,7 +70,7 @@ export const useGlobalStore = defineStore("global", () => {
   watch(
     () => activeSlider.value,
     () => {
-      if (activeSlider.value?.meta) {
+      if (activeSlider.value?.meta && Object.keys(activeSlider.value?.meta).length) {
         metadata.value = activeSlider.value?.meta;
       }
     },

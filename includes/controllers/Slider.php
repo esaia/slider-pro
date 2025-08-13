@@ -137,9 +137,7 @@ class SliderProAjaxHandler
             $this->send_error('Title is required');
         }
 
-        if ($slides) {
-            $slides = wp_json_encode($slides);
-        }
+        $slides = wp_json_encode($slides);
 
         return compact('title', 'slides', 'status');
     }
@@ -155,9 +153,7 @@ class SliderProAjaxHandler
 
         $data = $this->validate_slider_data();
 
-
         $query = SliderProDb::table($this->sliders_table)->create($data);
-
 
         $this->send_success([
             'message' => 'Slider created successfully',

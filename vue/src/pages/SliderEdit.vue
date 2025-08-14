@@ -18,6 +18,7 @@ const { metadata, activeSlider } = storeToRefs(globalStore);
 const title = ref(activeSlider.value?.title || "");
 const loading = ref(false);
 const isPreview = ref(true);
+const previewKey = ref(0);
 
 const handleUpdateSlider = async () => {
   try {
@@ -37,6 +38,8 @@ const handleUpdateSlider = async () => {
       meta: metadata.value
     });
 
+    previewKey.value++;
+
     toast.add({ severity: "success", summary: "Slider updated", detail: "", group: "br", life: 3000 });
   } catch (error) {
     toast.add({ severity: "error", summary: "Something went wrong", detail: "", group: "br", life: 3000 });
@@ -53,7 +56,7 @@ const handleUpdateSlider = async () => {
       </Button>
     </div>
 
-    <div v-if="isPreview">
+    <div v-if="isPreview" :key="previewKey">
       <SliderShortcode :slider-id="activeSlider?.id" />
     </div>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ALL_DIRECTIONS, DIRECTIONS, NAVIGATION_POSITIONS, PAGINATION_STYLES } from "@/constants/constants";
+import { ALL_DIRECTIONS, NAVIGATION_POSITIONS, ORIENTATION, PAGINATION_STYLES } from "@/constants/constants";
 import Config from "@components/UI/Config.vue";
 import ToggleButton from "primevue/togglebutton";
 import InputText from "primevue/inputtext";
@@ -52,14 +52,14 @@ const { metadata } = storeToRefs(globalStore);
             </InputGroup>
           </Config>
 
-          <Config title="Slider Direction" desc="Set slider direction as you need.">
+          <Config title="Slider orientation" desc="Set slider orientation as you need.">
             <SelectButton
-              :model-value="metadata.sliderDirection"
-              :options="DIRECTIONS"
+              :model-value="metadata.reversedDirection"
+              :options="ORIENTATION"
               size="small"
               optionLabel="name"
               option-value="value"
-              @update:model-value="globalStore.updateMetadata('sliderDirection', $event)"
+              @update:model-value="globalStore.updateMetadata('reversedDirection', $event)"
             />
           </Config>
 

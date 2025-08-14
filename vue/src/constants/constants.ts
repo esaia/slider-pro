@@ -1,8 +1,12 @@
 export const TRANSITIONS = [
+  { name: "Slide", value: "" },
   { name: "Fade", value: "fade" },
-  { name: "Slide", value: "slide" },
-  { name: "Zoom", value: "zoom" },
-  { name: "Flip", value: "flip" }
+  { name: "Cube", value: "cube" },
+  { name: "Flip", value: "flip" },
+  { name: "Coverflow", value: "coverflow" },
+  { name: "Cards", value: "cards" },
+  { name: "Creative 1", value: "creative1" },
+  { name: "Creative 2", value: "creative2" }
 ];
 
 export const DEVICES = ["desktop", "laptop", "tablet", "mobile"];
@@ -18,14 +22,14 @@ export const CLICK_ACTIONS = [
   { name: "None", value: "none" }
 ];
 
-export const ORIENTATION = [
+export const DIRECTIONS = [
   { name: "Horizontal", value: "horizontal" },
   { name: "Vertical", value: "vertical" }
 ];
 
-export const DIRECTIONS = [
-  { name: "Right to left", value: "right" },
-  { name: "Left to right", value: "left" }
+export const ORIENTATION = [
+  { name: "Right to left", value: false },
+  { name: "Left to right", value: true }
 ];
 
 export const PAGINATION_STYLES = [

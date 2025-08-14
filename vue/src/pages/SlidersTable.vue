@@ -8,6 +8,7 @@ import Dialog from "primevue/dialog";
 import ajaxAxios from "@/utils/axios";
 import { useGlobalStore } from "@/store/useGlobal";
 import { storeToRefs } from "pinia";
+import Loading from "@/components/icons/Loading.vue";
 
 const globalStore = useGlobalStore();
 const { sliders } = storeToRefs(globalStore);
@@ -84,7 +85,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="loading">LOADING</div>
+  <div v-if="loading">
+    <Loading />
+  </div>
   <div v-else>
     <div class="mb-6 flex items-center justify-between">
       <div class="text-2xl font-semibold">Slider Pro</div>

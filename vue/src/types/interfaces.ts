@@ -61,11 +61,12 @@ interface Nonces {
 export interface Meta {
   slideEffect: string;
   columns: Columns;
+  paddingTop: number;
   spaceBetween: number;
   clickAction: string;
   orderBy: string;
   infiniteLoop: boolean;
-  sliderDirection: string;
+  sliderDirection: "horizontal" | "vertical";
   autoplay: boolean;
   sliderSpeed: number;
   sliderOrientation: string;

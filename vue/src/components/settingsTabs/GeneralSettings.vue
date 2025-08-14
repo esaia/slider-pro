@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CLICK_ACTIONS, DEVICES, ORDER_BY_OPTIONS, ORIENTATION, TRANSITIONS } from "@/constants/constants";
+import { CLICK_ACTIONS, DEVICES, DIRECTIONS, ORDER_BY_OPTIONS, TRANSITIONS } from "@/constants/constants";
 import Config from "@components/UI/Config.vue";
 import Select from "primevue/select";
 import InputText from "primevue/inputtext";
@@ -41,6 +41,18 @@ const { metadata } = storeToRefs(globalStore);
           />
         </InputGroup>
       </div>
+    </Config>
+
+    <Config title="Padding top" desc="Set a padding top % in range 1-100.">
+      <InputGroup>
+        <InputText
+          :model-value="metadata.paddingTop"
+          type="number"
+          class="!w-20"
+          @update:model-value="globalStore.updateMetadata('paddingTop', $event)"
+        />
+        <InputGroupAddon> % </InputGroupAddon>
+      </InputGroup>
     </Config>
 
     <Config title="Space between" desc="Set a space between the items.">
@@ -87,14 +99,14 @@ const { metadata } = storeToRefs(globalStore);
       />
     </Config>
 
-    <Config title="Slider Orientation" desc="Choose a slider orientation.">
+    <Config title="Slider direction" desc="Choose a slider direction.">
       <SelectButton
-        :model-value="metadata.sliderOrientation"
-        :options="ORIENTATION"
+        :model-value="metadata.sliderDirection"
+        :options="DIRECTIONS"
         size="small"
         optionLabel="name"
         option-value="value"
-        @update:model-value="globalStore.updateMetadata('sliderOrientation', $event)"
+        @update:model-value="globalStore.updateMetadata('sliderDirection', $event)"
       />
     </Config>
   </div>

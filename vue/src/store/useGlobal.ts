@@ -9,17 +9,18 @@ export const useGlobalStore = defineStore("global", () => {
     // General settings
     slideEffect: "fade",
     columns: { desktop: 1, laptop: 1, tablet: 1, mobile: 1 },
+    paddingTop: 50,
     spaceBetween: 0,
     clickAction: "lightbox",
     orderBy: "drag",
     infiniteLoop: false,
-    sliderDirection: "right",
+    sliderDirection: "horizontal",
     // Module settings
 
     // Autoplay
     autoplay: false,
     sliderSpeed: 3000,
-    sliderOrientation: "horizontal",
+    reversedDirection: false,
     pauseonhover: true,
 
     // Navigation

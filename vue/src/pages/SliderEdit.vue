@@ -38,7 +38,6 @@ const handleUpdateSlider = async () => {
 
     toast.add({ severity: "success", summary: "Slider updated", detail: "", group: "br", life: 3000 });
   } catch (error) {
-    console.error("ERROR", error);
     toast.add({ severity: "error", summary: "Something went wrong", detail: "", group: "br", life: 3000 });
   } finally {
     loading.value = false;

@@ -24,7 +24,6 @@ function slider_pro__create_tables()
         id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
         title varchar(255) NOT NULL,
         slides JSON,
-        status varchar(20) NOT NULL DEFAULT 'active',
         created_at datetime DEFAULT CURRENT_TIMESTAMP,
         updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id)

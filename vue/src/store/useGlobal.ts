@@ -48,10 +48,8 @@ export const useGlobalStore = defineStore("global", () => {
     const [parent, child] = key.split(".");
     if (child && Object.prototype.hasOwnProperty.call(metadata.value[parent], child)) {
       metadata.value[parent][child] = ["columns", "margin"].includes(parent) ? Number(value) : value;
-    } else if (Object.prototype.hasOwnProperty.call(metadata.value, key)) {
-      metadata.value[key] = value;
     } else {
-      console.warn(`Property ${key} does not exist in metadata`);
+      metadata.value[key] = value;
     }
   };
 

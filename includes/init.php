@@ -64,7 +64,7 @@ function slider_pro__enqueue_vue_assets($hook)
     wp_enqueue_script(
         'slider-pro-vue-js',
         plugin_dir_url(SLIDER_PRO_PLUGIN_PATH) . 'dist/assets/index.js',
-        ['jquery', 'wp-util'],
+        [],
         null,
         true
     );

@@ -45,7 +45,7 @@ class SliderProAjaxHandler
             'create_slider' => 'create_slider',
             'update_slider' => 'update_slider',
             'delete_slider' => 'delete_slider',
-            'get_slider' => 'get_slider',
+            // 'get_slider' => 'get_slider',
             'get_sliders' => 'get_sliders',
 
             // Slider Meta operations
@@ -56,9 +56,6 @@ class SliderProAjaxHandler
         foreach ($ajax_actions as $action => $method) {
             add_action("wp_ajax_slider_pro_{$action}", [$this, $method]);
         }
-
-        // Public AJAX (for frontend)
-        add_action('wp_ajax_nopriv_slider_pro_get_slider_public', [$this, 'get_slider_public']);
     }
 
     /**
@@ -71,10 +68,6 @@ class SliderProAjaxHandler
     {
         if (!wp_verify_nonce($_POST['nonce'] ?? '', $action)) {
             $this->send_error('Security check failed', 403);
-        }
-
-        if (!current_user_can('manage_options')) {
-            $this->send_error('Insufficient permissions', 403);
         }
 
         return true;
@@ -131,7 +124,6 @@ class SliderProAjaxHandler
     {
         $title = sanitize_text_field($_POST['title'] ?? '');
         $slides = wp_unslash($_POST['slides'] ?? []);
-        $status = sanitize_text_field($_POST['status'] ?? 'active');
 
         if (empty($title)) {
             $this->send_error('Title is required');
@@ -139,7 +131,7 @@ class SliderProAjaxHandler
 
         $slides = wp_json_encode($slides);
 
-        return compact('title', 'slides', 'status');
+        return compact('title', 'slides');
     }
 
 
@@ -192,24 +184,6 @@ class SliderProAjaxHandler
         $this->send_success(['message' => 'Slider deleted successfully']);
     }
 
-    /**
-     * Get single slider
-     */
-    public function get_slider()
-    {
-        $this->verify_request();
-
-        $slider_id = $this->get_slider_id();
-
-        $slide = SliderProDb::table($this->sliders_table)->find($slider_id);
-
-        if ($slide) {
-            $slide = $this->map_slider_data($slide);
-        }
-
-
-        $this->send_success($slide);
-    }
 
     /**
      * Get all sliders with pagination and filtering
@@ -269,64 +243,6 @@ class SliderProAjaxHandler
 
 
     /**
-     * Get slider meta
-     */
-    public function get_slider_meta($id = null)
-    {
-        $this->verify_request();
-        $slider_id = $id ?? $this->get_slider_id();
-        $meta_data = $this->get_slider_meta_data($slider_id);
-        return $meta_data;
-    }
-
-
-
-    /**
-     * Check if slider exists
-     * 
-     * @param int $slider_id Slider ID
-     * @return bool
-     */
-    private function slider_exists($slider_id)
-    {
-        $count = SliderProDb::table($this->sliders_table)
-            ->where('id', '=', $slider_id)
-            ->count();
-
-        return $count > 0;
-    }
-
-
-
-    /**
-     * Get slider meta data as associative array
-     * 
-     * @param int $slider_id Slider ID
-     * @return array Meta data
-     */
-    private function get_slider_meta_data($slider_id)
-    {
-        $metas = SliderProDb::table($this->slider_metas_table)
-            ->where('slider_id', '=', $slider_id)
-            ->get();
-
-        $formatted_metas = [];
-
-        foreach ($metas as $meta) {
-            $value = $meta->meta_value;
-
-            // Try to decode JSON values
-            $decoded = json_decode($value, true);
-
-            // Store the decoded value if valid JSON, otherwise keep original
-            $formatted_metas[$meta->meta_key] = (json_last_error() === JSON_ERROR_NONE) ? $decoded : $value;
-        }
-
-        return $formatted_metas;
-    }
-
-
-    /**
      * Insert or update slider meta (upsert)
      * 
      * @param int $slider_id Slider ID
@@ -365,6 +281,62 @@ class SliderProAjaxHandler
         }
     }
 
+
+
+    /**
+     * Check if slider exists
+     * 
+     * @param int $slider_id Slider ID
+     * @return bool
+     */
+    private function slider_exists($slider_id)
+    {
+        $count = SliderProDb::table($this->sliders_table)
+            ->where('id', '=', $slider_id)
+            ->count();
+
+        return $count > 0;
+    }
+
+
+    /**
+     * Get slider meta
+     */
+    public function get_slider_meta($id = null)
+    {
+        $this->verify_request();
+        $slider_id = $id ?? $this->get_slider_id();
+        $meta_data = $this->get_slider_meta_data($slider_id);
+        return $meta_data;
+    }
+
+
+    /**
+     * Get slider meta data as associative array
+     * 
+     * @param int $slider_id Slider ID
+     * @return array Meta data
+     */
+    private function get_slider_meta_data($slider_id)
+    {
+        $metas = SliderProDb::table($this->slider_metas_table)
+            ->where('slider_id', '=', $slider_id)
+            ->get();
+
+        $formatted_metas = [];
+
+        foreach ($metas as $meta) {
+            $value = $meta->meta_value;
+
+            // Try to decode JSON values
+            $decoded = json_decode($value, true);
+
+            // Store the decoded value if valid JSON, otherwise keep original
+            $formatted_metas[$meta->meta_key] = (json_last_error() === JSON_ERROR_NONE) ? $decoded : $value;
+        }
+
+        return $formatted_metas;
+    }
 
 
 

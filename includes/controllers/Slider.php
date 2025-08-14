@@ -15,11 +15,6 @@ if (!defined('ABSPATH')) {
 
 class SliderProAjaxHandler extends SliderProBaseAjaxHandler
 {
-    /**
-     * Database table names
-     */
-    private $sliders_table;
-    private $slider_metas_table;
 
 
     /**
@@ -27,13 +22,11 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
      */
     public function __construct()
     {
-        global $wpdb;
-
-        $this->sliders_table = $wpdb->prefix . 'slider_pro_sliders';
-        $this->slider_metas_table = $wpdb->prefix . 'slider_pro_slider_metas';
+        parent::__construct();
 
         $this->init_ajax_hooks();
     }
+
 
     /**
      * Initialize AJAX hooks
@@ -58,26 +51,6 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
         }
     }
 
-    /**
-     * Get and validate slider ID from POST data
-     * 
-     * @param bool $required Whether slider ID is required
-     * @return int Validated slider ID
-     */
-    private function get_slider_id($required = true)
-    {
-        $slider_id = intval($_POST['sliderId'] ?? 0);
-
-        if ($required && !$slider_id) {
-            $this->send_error('Slider ID is required');
-        }
-
-        if ($slider_id && !$this->slider_exists($slider_id)) {
-            $this->send_error('Slider not found', 404);
-        }
-
-        return $slider_id;
-    }
 
     /**
      * Validate and sanitize slider data
@@ -156,17 +129,14 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
     {
         $this->verify_request();
 
-
         $page = absint($_POST['page'] ?? 1);
         $perPage = absint($_POST['perPage'] ?? 10);
 
         $data = SliderProDb::table($this->sliders_table)->orderBy('created_at', "DESC")->paginate($page, $perPage);
 
-
         if ($data) {
             $data['data'] = array_map([$this, 'map_slider_data'], $data['data']);
         }
-
 
 
         $this->send_success($data);
@@ -243,82 +213,6 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
             SliderProDb::table($this->slider_metas_table)
                 ->create($data);
         }
-    }
-
-
-
-    /**
-     * Check if slider exists
-     * 
-     * @param int $slider_id Slider ID
-     * @return bool
-     */
-    private function slider_exists($slider_id)
-    {
-        $count = SliderProDb::table($this->sliders_table)
-            ->where('id', '=', $slider_id)
-            ->count();
-
-        return $count > 0;
-    }
-
-
-    /**
-     * Get slider meta
-     */
-    public function get_slider_meta($id = null)
-    {
-        $this->verify_request();
-        $slider_id = $id ?? $this->get_slider_id();
-        $meta_data = $this->get_slider_meta_data($slider_id);
-        return $meta_data;
-    }
-
-
-    /**
-     * Get slider meta data as associative array
-     * 
-     * @param int $slider_id Slider ID
-     * @return array Meta data
-     */
-    private function get_slider_meta_data($slider_id)
-    {
-        $metas = SliderProDb::table($this->slider_metas_table)
-            ->where('slider_id', '=', $slider_id)
-            ->get();
-
-        $formatted_metas = [];
-
-        foreach ($metas as $meta) {
-            $value = $meta->meta_value;
-
-            // Try to decode JSON values
-            $decoded = json_decode($value, true);
-
-            // Store the decoded value if valid JSON, otherwise keep original
-            $formatted_metas[$meta->meta_key] = (json_last_error() === JSON_ERROR_NONE) ? $decoded : $value;
-        }
-
-        return $formatted_metas;
-    }
-
-
-
-    private function map_slider_data($item)
-    {
-        $item = (array) $item;
-        if (!empty($item['slides'])) {
-            $item['slides'] = json_decode($item['slides'], true);
-        } else {
-            $item['slides'] = [];
-        }
-
-
-        $meta = $this->get_slider_meta($item['id']);
-
-        $item['meta'] = $meta;
-
-        return $item;
     }
 }
 

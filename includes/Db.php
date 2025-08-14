@@ -13,6 +13,7 @@ class SliderProDb
     private $offset = 0;
     private $limit = null;
     private $orderBy = null;
+    private $debug = false;
 
     public function __construct($table)
     {
@@ -32,7 +33,11 @@ class SliderProDb
         return $this->wpdb->insert_id;
     }
 
-
+    public function debug()
+    {
+        $this->debug = true;
+        return $this;
+    }
 
 
     public function update($data)
@@ -149,6 +154,9 @@ class SliderProDb
 
         $sql = "SELECT {$columns} FROM {$this->table} {$whereClause} {$orderBy} {$limitSql}";
 
+        if ($this->debug) {
+            dd(['sql' => $sql, 'params' => $params]);
+        }
         // irep_dd($params); // Debugging SQL query
         // irep_dd($sql); // Debugging SQL query
         if (!empty($params)) {

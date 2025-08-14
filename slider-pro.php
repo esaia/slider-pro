@@ -30,4 +30,7 @@ require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/Db.php';
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/init.php';
 
 // Controllers
+include_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . './includes/BaseController.php';
+
 include_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . './includes/controllers/Slider.php';
+include_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . './includes/controllers/ShortcodeController.php';

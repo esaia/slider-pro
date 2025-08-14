@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class SliderProAjaxHandler
+class SliderProAjaxHandler extends SliderProBaseAjaxHandler
 {
     /**
      * Database table names
@@ -56,42 +56,6 @@ class SliderProAjaxHandler
         foreach ($ajax_actions as $action => $method) {
             add_action("wp_ajax_slider_pro_{$action}", [$this, $method]);
         }
-    }
-
-    /**
-     * Verify nonce and user permissions
-     * 
-     * @param string $action Nonce action
-     * @return bool
-     */
-    private function verify_request($action = 'slider_pro_nonce')
-    {
-        if (!wp_verify_nonce($_POST['nonce'] ?? '', $action)) {
-            $this->send_error('Security check failed', 403);
-        }
-
-        return true;
-    }
-
-    /**
-     * Send JSON error response
-     * 
-     * @param string $message Error message
-     * @param int $code HTTP status code
-     */
-    private function send_error($message, $code = 400)
-    {
-        wp_send_json_error(['message' => $message], $code);
-    }
-
-    /**
-     * Send JSON success response
-     * 
-     * @param array $data Response data
-     */
-    private function send_success($data)
-    {
-        wp_send_json_success($data);
     }
 
     /**

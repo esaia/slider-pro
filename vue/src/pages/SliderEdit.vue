@@ -8,6 +8,7 @@ import ajaxAxios from "@/utils/axios";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import { useToast } from "primevue/usetoast";
+import SliderShortcode from "@/shortcode/SliderShortcode.vue";
 
 const toast = useToast();
 
@@ -15,8 +16,8 @@ const globalStore = useGlobalStore();
 const { metadata, activeSlider } = storeToRefs(globalStore);
 
 const title = ref(activeSlider.value?.title || "");
-
 const loading = ref(false);
+const isPreview = ref(true);
 
 const handleUpdateSlider = async () => {
   try {
@@ -46,6 +47,16 @@ const handleUpdateSlider = async () => {
 </script>
 <template>
   <div class="container space-y-6">
+    <div class="fixed right-10 bottom-10">
+      <Button severity="info" raised @click="isPreview = !isPreview"
+        >{{ isPreview ? "hide preview" : "show preview" }}
+      </Button>
+    </div>
+
+    <div v-if="isPreview">
+      <SliderShortcode :slider-id="activeSlider?.id" />
+    </div>
+
     <div>
       <a :href="`${sliderPro.plugin_url}`">
         <Button label="Back to sliders list" variant="link" class="mb-2 w-fit !p-0" />

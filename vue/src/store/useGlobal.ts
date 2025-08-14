@@ -27,12 +27,13 @@ export const useGlobalStore = defineStore("global", () => {
     // Navigation
     navigation: true,
     navigationPosition: "vertical-outer",
-    navigationColors: { color: "#ffffff", active: "#cccccc" },
+    navigationActiveColor: "cccccc",
 
     // Pagination
     pagination: true,
     paginationStyle: "bullets",
-    paginationColors: { color: "#ffffff", active: "#cccccc" },
+    paginationActiveColor: "cccccc",
+    clickable: false,
     paginationMargin: { top: 0, right: 0, down: 0, left: 0 }
   });
 

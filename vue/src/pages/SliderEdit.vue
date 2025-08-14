@@ -3,7 +3,7 @@ import SliderSettingsTabs from "@/components/UI/SliderSettingsTabs.vue";
 import UploadImage from "@/components/form/UploadImage.vue";
 import { useGlobalStore } from "@/store/useGlobal";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import ajaxAxios from "@/utils/axios";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
@@ -47,12 +47,24 @@ const handleUpdateSlider = async () => {
     loading.value = false;
   }
 };
+
+watch(
+  () => isPreview.value,
+  () => {
+    if (isPreview.value) {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+  }
+);
 </script>
 <template>
   <div class="container space-y-6">
     <div class="fixed right-10 bottom-10">
-      <Button severity="info" raised @click="isPreview = !isPreview"
-        >{{ isPreview ? "hide preview" : "show preview" }}
+      <Button severity="info" raised @click="isPreview = !isPreview">
+        {{ isPreview ? "hide preview" : "show preview" }}
       </Button>
     </div>
 

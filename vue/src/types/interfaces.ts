@@ -75,10 +75,11 @@ export interface Meta {
   stopOnLastSlide: boolean;
   navigation: boolean;
   navigationPosition: string;
-  navigationColors: NavigationColors;
+  navigationActiveColor: string;
   pagination: boolean;
   paginationStyle: string;
-  paginationColors: NavigationColors;
+  paginationActiveColor: string;
+  clickable: boolean;
   paginationMargin: PaginationMargin;
 }
 
@@ -87,11 +88,6 @@ interface PaginationMargin {
   right: number;
   down: number;
   left: number;
-}
-
-interface NavigationColors {
-  color: string;
-  active: string;
 }
 
 interface Columns {

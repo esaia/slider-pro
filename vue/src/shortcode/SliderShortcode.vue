@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import {
   Navigation,
   Pagination,
+  Scrollbar,
   Autoplay,
   EffectFade,
   EffectCube,
@@ -20,6 +21,7 @@ import {
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 import "swiper/css/autoplay";
 import "swiper/css/effect-fade";
 import "swiper/css/effect-cube";
@@ -34,10 +36,13 @@ const props = defineProps<{
 
 const sliderData = ref<Slider>();
 const laoding = ref(true);
+const paginationContainer = ref();
+const scrollBarContainer = ref();
 
 const modules = [
   Navigation,
   Pagination,
+  Scrollbar,
   Autoplay,
   EffectFade,
   EffectCube,
@@ -76,7 +81,7 @@ const breakpoints = computed(() => {
 });
 
 const effect = computed(() => {
-  return sliderMeta.value?.slideEffect.startsWith("creative") ? "creative" : sliderMeta.value?.slideEffect;
+  return sliderMeta.value?.slideEffect?.startsWith("creative") ? "creative" : sliderMeta.value?.slideEffect;
 });
 
 const createiveEffect = computed(() => {
@@ -117,6 +122,19 @@ const autoPlay = computed(() => {
     : false;
 });
 
+const pagination = computed(() => {
+  return sliderMeta.value?.pagination
+    ? {
+        el: paginationContainer.value,
+        clickable: sliderMeta.value.clickable,
+        dynamicBullets: sliderMeta.value.paginationStyle === "dynamic",
+        renderBullet: (index: number, className: string) => {
+          return `<span class='${className}' key="${index}" style='background: #${sliderMeta.value?.paginationActiveColor}' > </span>`;
+        }
+      }
+    : false;
+});
+
 onMounted(async () => {
   const { data } = await ajaxAxios.post("", {
     action: "slider_pro_get_slider_shortcode",
@@ -131,7 +149,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="overflow-hidden">
+  <div class="">
     <div v-if="laoding" class="flex items-center justify-center">
       <Loading />
     </div>
@@ -148,6 +166,10 @@ onMounted(async () => {
       :direction="sliderMeta?.sliderDirection"
       :centered-slides="sliderMeta?.centerSlides"
       :autoplay="autoPlay"
+      :pagination="pagination"
+      :scrollbar="{
+        el: scrollBarContainer
+      }"
       grabCursor
       auto-height
       class="w-full"
@@ -159,5 +181,23 @@ onMounted(async () => {
         </div>
       </swiper-slide>
     </swiper>
+
+    <div
+      class="flex w-full items-center justify-center"
+      :style="{
+        margin: `${sliderMeta?.paginationMargin.top || 0}px ${sliderMeta?.paginationMargin.right || 0}px ${sliderMeta?.paginationMargin.down || 0}px ${sliderMeta?.paginationMargin.left || 0}px`
+      }"
+    >
+      <div ref="paginationContainer" :class="{ '!w-fit': sliderMeta?.paginationStyle !== 'dynamic' }" />
+    </div>
+
+    <div
+      class="flex w-full items-center justify-center"
+      :style="{
+        margin: `${sliderMeta?.paginationMargin.top || 0}px ${sliderMeta?.paginationMargin.right || 0}px ${sliderMeta?.paginationMargin.down || 0}px ${sliderMeta?.paginationMargin.left || 0}px`
+      }"
+    >
+      <div ref="scrollBarContainer" />
+    </div>
   </div>
 </template>

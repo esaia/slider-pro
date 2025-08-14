@@ -108,24 +108,14 @@ const { metadata } = storeToRefs(globalStore);
           </Config>
 
           <Config title="Navigation Color" desc="Set color for the slider navigation.">
-            <div class="flex items-center gap-4">
-              <div class="flex flex-col items-start gap-2 text-gray-500">
-                <label> Color:</label>
-                <ColorPicker
-                  :model-value="metadata.navigationColors.color"
-                  name="color"
-                  @update:model-value="globalStore.updateMetadata('navigationColors.color', $event)"
-                />
-              </div>
-              <div class="flex flex-col items-start gap-2 text-gray-500">
-                <label>Active color:</label>
+            <div class="flex flex-col items-start gap-2 text-gray-500">
+              <label>Active color:</label>
 
-                <ColorPicker
-                  :model-value="metadata.navigationColors.active"
-                  name="color"
-                  @update:model-value="globalStore.updateMetadata('navigationColors.active', $event)"
-                />
-              </div>
+              <ColorPicker
+                :model-value="metadata.navigationActiveColor"
+                name="color"
+                @update:model-value="globalStore.updateMetadata('navigationActiveColor', $event)"
+              />
             </div>
           </Config>
         </div>
@@ -154,25 +144,24 @@ const { metadata } = storeToRefs(globalStore);
           </Config>
 
           <Config title="Pagination Color" desc="Set color for the slider pagination.">
-            <div class="flex items-center gap-4">
-              <div class="flex flex-col items-start gap-2 text-gray-500">
-                <label> Color:</label>
-                <ColorPicker
-                  :model-value="metadata.paginationColors.color"
-                  name="color"
-                  @update:model-value="globalStore.updateMetadata('paginationColors.color', $event)"
-                />
-              </div>
-              <div class="flex flex-col items-start gap-2 text-gray-500">
-                <label>Active color:</label>
+            <div class="flex flex-col items-start gap-2 text-gray-500">
+              <label>Active color:</label>
 
-                <ColorPicker
-                  :model-value="metadata.paginationColors.active"
-                  name="color"
-                  @update:model-value="globalStore.updateMetadata('paginationColors.active', $event)"
-                />
-              </div>
+              <ColorPicker
+                :model-value="metadata.paginationActiveColor"
+                name="color"
+                @update:model-value="globalStore.updateMetadata('paginationActiveColor', $event)"
+              />
             </div>
+          </Config>
+
+          <Config title="clickable" desc="Enable/disable pagination clickable.">
+            <ToggleButton
+              :model-value="metadata.clickable"
+              onLabel="On"
+              offLabel="Off"
+              @update:model-value="globalStore.updateMetadata('clickable', $event)"
+            />
           </Config>
 
           <Config title="Pagination margin" desc="Set margin for slider pagination.">

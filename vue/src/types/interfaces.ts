@@ -78,6 +78,7 @@ export interface Meta {
   navigationActiveColor: string;
   pagination: boolean;
   paginationStyle: string;
+  scrollbarBackground: string;
   paginationActiveColor: string;
   clickable: boolean;
   paginationMargin: PaginationMargin;

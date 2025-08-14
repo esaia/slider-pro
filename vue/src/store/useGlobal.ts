@@ -32,6 +32,7 @@ export const useGlobalStore = defineStore("global", () => {
     // Pagination
     pagination: true,
     paginationStyle: "bullets",
+    scrollbarBackground: "cccccc",
     paginationActiveColor: "cccccc",
     clickable: false,
     paginationMargin: { top: 0, right: 0, down: 0, left: 0 }

@@ -144,14 +144,26 @@ const { metadata } = storeToRefs(globalStore);
           </Config>
 
           <Config title="Pagination Color" desc="Set color for the slider pagination.">
-            <div class="flex flex-col items-start gap-2 text-gray-500">
-              <label>Active color:</label>
+            <div class="flex gap-4">
+              <div class="flex flex-col items-start gap-2 text-gray-500">
+                <label>Active:</label>
 
-              <ColorPicker
-                :model-value="metadata.paginationActiveColor"
-                name="color"
-                @update:model-value="globalStore.updateMetadata('paginationActiveColor', $event)"
-              />
+                <ColorPicker
+                  :model-value="metadata.paginationActiveColor"
+                  name="color"
+                  @update:model-value="globalStore.updateMetadata('paginationActiveColor', $event)"
+                />
+              </div>
+
+              <div class="flex flex-col items-start gap-2 text-gray-500">
+                <label>Scrollbar background:</label>
+
+                <ColorPicker
+                  :model-value="metadata.scrollbarBackground"
+                  name="color"
+                  @update:model-value="globalStore.updateMetadata('scrollbarBackground', $event)"
+                />
+              </div>
             </div>
           </Config>
 

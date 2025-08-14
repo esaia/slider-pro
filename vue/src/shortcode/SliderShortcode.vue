@@ -123,7 +123,7 @@ const autoPlay = computed(() => {
 });
 
 const pagination = computed(() => {
-  return sliderMeta.value?.pagination
+  return sliderMeta.value?.pagination && ["bullets", "dynamic"].includes(sliderMeta.value.paginationStyle)
     ? {
         el: paginationContainer.value,
         clickable: sliderMeta.value.clickable,
@@ -131,6 +131,14 @@ const pagination = computed(() => {
         renderBullet: (index: number, className: string) => {
           return `<span class='${className}' key="${index}" style='background: #${sliderMeta.value?.paginationActiveColor}' > </span>`;
         }
+      }
+    : false;
+});
+
+const scrollbar = computed(() => {
+  return sliderMeta.value?.pagination && sliderMeta.value?.paginationStyle === "scrollbar"
+    ? {
+        el: scrollBarContainer.value
       }
     : false;
 });
@@ -149,7 +157,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="">
+  <div class="slider-pro">
     <div v-if="laoding" class="flex items-center justify-center">
       <Loading />
     </div>
@@ -167,9 +175,7 @@ onMounted(async () => {
       :centered-slides="sliderMeta?.centerSlides"
       :autoplay="autoPlay"
       :pagination="pagination"
-      :scrollbar="{
-        el: scrollBarContainer
-      }"
+      :scrollbar="scrollbar"
       grabCursor
       auto-height
       class="w-full"
@@ -183,21 +189,28 @@ onMounted(async () => {
     </swiper>
 
     <div
-      class="flex w-full items-center justify-center"
+      v-show="sliderMeta?.paginationStyle === 'scrollbar'"
       :style="{
-        margin: `${sliderMeta?.paginationMargin.top || 0}px ${sliderMeta?.paginationMargin.right || 0}px ${sliderMeta?.paginationMargin.down || 0}px ${sliderMeta?.paginationMargin.left || 0}px`
+        margin: `${sliderMeta?.paginationMargin?.top || 0}px ${sliderMeta?.paginationMargin?.right || 0}px ${sliderMeta?.paginationMargin?.down || 0}px ${sliderMeta?.paginationMargin?.left || 0}px`
       }"
     >
-      <div ref="paginationContainer" :class="{ '!w-fit': sliderMeta?.paginationStyle !== 'dynamic' }" />
+      <div
+        ref="scrollBarContainer"
+        class="h-[4px] rounded-full bg-black [.slider-pro_&_.swiper-scrollbar-drag]:!bg-[var(--scrollbar-active)]"
+        :style="{
+          '--scrollbar-active': `#${sliderMeta?.paginationActiveColor}`,
+          background: `#${sliderMeta?.scrollbarBackground}`
+        }"
+      ></div>
     </div>
 
     <div
-      class="flex w-full items-center justify-center"
+      class="relative z-20 flex w-full items-center justify-center"
       :style="{
-        margin: `${sliderMeta?.paginationMargin.top || 0}px ${sliderMeta?.paginationMargin.right || 0}px ${sliderMeta?.paginationMargin.down || 0}px ${sliderMeta?.paginationMargin.left || 0}px`
+        margin: `${sliderMeta?.paginationMargin?.top || 0}px ${sliderMeta?.paginationMargin?.right || 0}px ${sliderMeta?.paginationMargin?.down || 0}px ${sliderMeta?.paginationMargin?.left || 0}px`
       }"
     >
-      <div ref="scrollBarContainer" />
+      <div ref="paginationContainer" class="!w-fit !transform-[unset]" />
     </div>
   </div>
 </template>

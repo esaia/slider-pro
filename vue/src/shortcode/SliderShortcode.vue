@@ -62,20 +62,24 @@ const slides = computed(() => {
     : sliderData.value?.slides;
 });
 
+const isSliderDirectionVertical = computed(() => {
+  return sliderMeta.value?.sliderDirection === "vertical";
+});
+
 const breakpoints = computed(() => {
   console.log("sliderMeta,", sliderMeta.value);
   return {
     0: {
-      slidesPerView: sliderMeta.value?.sliderDirection === "vertical" ? 1 : Number(sliderMeta.value?.columns?.mobile)
+      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.mobile)
     },
     800: {
-      slidesPerView: sliderMeta.value?.sliderDirection === "vertical" ? 1 : Number(sliderMeta.value?.columns?.tablet)
+      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.tablet)
     },
     1280: {
-      slidesPerView: sliderMeta.value?.sliderDirection === "vertical" ? 1 : Number(sliderMeta.value?.columns?.laptop)
+      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.laptop)
     },
     1920: {
-      slidesPerView: sliderMeta.value?.sliderDirection === "vertical" ? 1 : Number(sliderMeta.value?.columns?.desktop)
+      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.desktop)
     }
   };
 });
@@ -144,6 +148,10 @@ const scrollbar = computed(() => {
     : false;
 });
 
+const paginationMargin = computed(() => {
+  return `${sliderMeta.value?.paginationMargin?.top || 0}px ${sliderMeta.value?.paginationMargin?.right || 0}px ${sliderMeta.value?.paginationMargin?.down || 0}px ${sliderMeta.value?.paginationMargin?.left || 0}px`;
+});
+
 onMounted(async () => {
   const { data } = await ajaxAxios.post("", {
     action: "slider_pro_get_slider_shortcode",
@@ -158,7 +166,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="slider-pro">
+  <div class="slider-pro relative">
     <div v-if="laoding" class="flex items-center justify-center">
       <Loading />
     </div>
@@ -191,13 +199,19 @@ onMounted(async () => {
 
     <div
       v-show="sliderMeta?.paginationStyle === 'scrollbar'"
+      :class="{
+        '!absolute top-1/2 right-4 z-20 h-full !w-[5px] -translate-y-1/2 py-4': isSliderDirectionVertical
+      }"
       :style="{
-        margin: `${sliderMeta?.paginationMargin?.top || 0}px ${sliderMeta?.paginationMargin?.right || 0}px ${sliderMeta?.paginationMargin?.down || 0}px ${sliderMeta?.paginationMargin?.left || 0}px`
+        margin: paginationMargin
       }"
     >
       <div
         ref="scrollBarContainer"
         class="h-[4px] rounded-full bg-black [.slider-pro_&_.swiper-scrollbar-drag]:!bg-[var(--scrollbar-active)]"
+        :class="{
+          'h-full': isSliderDirectionVertical
+        }"
         :style="{
           '--scrollbar-active': `#${sliderMeta?.paginationActiveColor}`,
           background: `#${sliderMeta?.scrollbarBackground}`
@@ -207,8 +221,11 @@ onMounted(async () => {
 
     <div
       class="relative z-20 flex w-full items-center justify-center"
+      :class="{
+        '!absolute top-1/2 right-4 !w-fit -translate-y-1/2': isSliderDirectionVertical
+      }"
       :style="{
-        margin: `${sliderMeta?.paginationMargin?.top || 0}px ${sliderMeta?.paginationMargin?.right || 0}px ${sliderMeta?.paginationMargin?.down || 0}px ${sliderMeta?.paginationMargin?.left || 0}px`
+        margin: paginationMargin
       }"
     >
       <div

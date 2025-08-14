@@ -8,6 +8,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import {
   Navigation,
   Pagination,
+  Autoplay,
   EffectFade,
   EffectCube,
   EffectFlip,
@@ -19,6 +20,7 @@ import {
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/autoplay";
 import "swiper/css/effect-fade";
 import "swiper/css/effect-cube";
 import "swiper/css/effect-flip";
@@ -36,6 +38,7 @@ const laoding = ref(true);
 const modules = [
   Navigation,
   Pagination,
+  Autoplay,
   EffectFade,
   EffectCube,
   EffectFlip,
@@ -102,6 +105,18 @@ const createiveEffect = computed(() => {
       };
 });
 
+const autoPlay = computed(() => {
+  return sliderMeta.value?.autoplay
+    ? {
+        delay: sliderMeta.value.autoplayDelay || 3000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: sliderMeta.value.pauseonhover,
+        reverseDirection: sliderMeta.value.reversedDirection,
+        stopOnLastSlide: sliderMeta.value.stopOnLastSlide
+      }
+    : false;
+});
+
 onMounted(async () => {
   const { data } = await ajaxAxios.post("", {
     action: "slider_pro_get_slider_shortcode",
@@ -127,12 +142,14 @@ onMounted(async () => {
       :modules="modules"
       :creativeEffect="createiveEffect"
       :effect="effect"
-      :grabCursor="true"
       :space-between="sliderMeta?.spaceBetween"
       :breakpoints="breakpoints"
       :loop="sliderMeta?.infiniteLoop"
-      :auto-height="true"
       :direction="sliderMeta?.sliderDirection"
+      :centered-slides="sliderMeta?.centerSlides"
+      :autoplay="autoPlay"
+      grabCursor
+      auto-height
       class="w-full"
       :style="`--padding-top: ${sliderMeta?.paddingTop}%;`"
     >

@@ -67,10 +67,12 @@ export interface Meta {
   orderBy: string;
   infiniteLoop: boolean;
   sliderDirection: "horizontal" | "vertical";
+  centerSlides: boolean;
   autoplay: boolean;
-  sliderSpeed: number;
-  sliderOrientation: string;
+  autoplayDelay: number;
+  reversedDirection: boolean;
   pauseonhover: boolean;
+  stopOnLastSlide: boolean;
   navigation: boolean;
   navigationPosition: string;
   navigationColors: NavigationColors;

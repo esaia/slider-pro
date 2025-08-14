@@ -15,11 +15,12 @@ export const useGlobalStore = defineStore("global", () => {
     orderBy: "drag",
     infiniteLoop: false,
     sliderDirection: "horizontal",
+    centerSlides: false,
     // Module settings
 
     // Autoplay
     autoplay: false,
-    sliderSpeed: 3000,
+    autoplayDelay: 3000,
     reversedDirection: false,
     pauseonhover: true,
 

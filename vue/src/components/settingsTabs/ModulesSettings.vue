@@ -40,13 +40,13 @@ const { metadata } = storeToRefs(globalStore);
             />
           </Config>
 
-          <Config title="Slider speed" desc="Set autoplay scroll speed in millisecond.">
+          <Config title="Slider autoplay delay" desc="Set autoplay scroll speed delay in millisecond.">
             <InputGroup>
               <InputText
-                :model-value="metadata.sliderSpeed"
+                :model-value="metadata.autoplayDelay"
                 type="number"
                 class="!w-24"
-                @update:model-value="globalStore.updateMetadata('sliderSpeed', $event)"
+                @update:model-value="globalStore.updateMetadata('autoplayDelay', $event)"
               />
               <InputGroupAddon> MS </InputGroupAddon>
             </InputGroup>
@@ -69,6 +69,15 @@ const { metadata } = storeToRefs(globalStore);
               onLabel="On"
               offLabel="Off"
               @update:model-value="globalStore.updateMetadata('pauseonhover', $event)"
+            />
+          </Config>
+
+          <Config title="Stop on last slide" desc="Enable/Disable autoplay stop or not on last slide.">
+            <ToggleButton
+              :model-value="metadata.stopOnLastSlide"
+              onLabel="On"
+              offLabel="Off"
+              @update:model-value="globalStore.updateMetadata('stopOnLastSlide', $event)"
             />
           </Config>
         </div>

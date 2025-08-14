@@ -109,5 +109,14 @@ const { metadata } = storeToRefs(globalStore);
         @update:model-value="globalStore.updateMetadata('sliderDirection', $event)"
       />
     </Config>
+
+    <Config title="Center Slides" desc="Enable/Disable center slide mode.">
+      <ToggleButton
+        :model-value="metadata.centerSlides"
+        onLabel="On"
+        offLabel="Off"
+        @update:model-value="globalStore.updateMetadata('centerSlides', $event)"
+      />
+    </Config>
   </div>
 </template>

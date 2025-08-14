@@ -123,11 +123,12 @@ const autoPlay = computed(() => {
 });
 
 const pagination = computed(() => {
-  return sliderMeta.value?.pagination && ["bullets", "dynamic"].includes(sliderMeta.value.paginationStyle)
+  return sliderMeta.value?.pagination && ["bullets", "dynamic", "fraction"].includes(sliderMeta.value.paginationStyle)
     ? {
         el: paginationContainer.value,
         clickable: sliderMeta.value.clickable,
         dynamicBullets: sliderMeta.value.paginationStyle === "dynamic",
+        type: sliderMeta.value.paginationStyle === "fraction" ? ("fraction" as "fraction") : ("bullets" as "bullets"),
         renderBullet: (index: number, className: string) => {
           return `<span class='${className}' key="${index}" style='background: #${sliderMeta.value?.paginationActiveColor}' > </span>`;
         }
@@ -210,7 +211,11 @@ onMounted(async () => {
         margin: `${sliderMeta?.paginationMargin?.top || 0}px ${sliderMeta?.paginationMargin?.right || 0}px ${sliderMeta?.paginationMargin?.down || 0}px ${sliderMeta?.paginationMargin?.left || 0}px`
       }"
     >
-      <div ref="paginationContainer" class="!w-fit !transform-[unset]" />
+      <div
+        ref="paginationContainer"
+        class="!transform-[unset]"
+        :class="{ '!w-fit': sliderMeta?.paginationStyle !== 'dynamic' }"
+      />
     </div>
   </div>
 </template>

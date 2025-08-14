@@ -11,11 +11,10 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Textarea from "primevue/textarea";
-import type { Slide } from "@/types/interfaces";
+import type { ImageInterface, Slide } from "@/types/interfaces";
 import { storeToRefs } from "pinia";
 
 const props = defineProps<{
-  title: string;
   required?: boolean;
   multiple?: boolean;
 }>();
@@ -110,8 +109,7 @@ watch(
 
 onMounted(() => {
   initializeSwapy();
-  // @ts-ignore
-  selectedImages.value = data.value;
+  selectedImages.value = data.value as ImageInterface[];
 });
 </script>
 

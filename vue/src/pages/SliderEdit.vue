@@ -62,7 +62,7 @@ watch(
 </script>
 <template>
   <div class="container space-y-6">
-    <div class="fixed right-10 bottom-10">
+    <div class="fixed right-10 bottom-10 z-[99]">
       <Button severity="info" raised @click="isPreview = !isPreview">
         {{ isPreview ? "hide preview" : "show preview" }}
       </Button>
@@ -94,7 +94,7 @@ watch(
         <Button label="get support" variant="link" class="[&_span]:text-white" />
       </div>
 
-      <UploadImage title="test title" required multiple class="p-4" />
+      <UploadImage required multiple class="p-4" />
     </div>
 
     <SliderSettingsTabs />

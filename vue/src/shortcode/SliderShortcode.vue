@@ -187,12 +187,15 @@ onMounted(async () => {
       :scrollbar="scrollbar"
       grabCursor
       auto-height
-      class="w-full"
       :style="`--padding-top: ${sliderMeta?.paddingTop}%;`"
     >
       <swiper-slide v-for="slide in slides" :key="slide.url" class="!h-fit">
-        <div class="relative w-full" :style="`padding-top: var(--padding-top);`">
-          <img :src="slide.url" alt="" class="absolute top-0 left-0 h-full w-full object-cover" />
+        <div class="relative w-full overflow-hidden" :style="{ paddingTop: 'var(--padding-top)' }">
+          <img
+            :src="slide.url"
+            alt=""
+            class="absolute top-0 left-0 h-full w-full object-cover transition-all duration-500 hover:scale-110"
+          />
         </div>
       </swiper-slide>
     </swiper>

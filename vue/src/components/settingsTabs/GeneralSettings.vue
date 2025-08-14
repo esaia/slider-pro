@@ -24,7 +24,7 @@ const { metadata } = storeToRefs(globalStore);
         optionLabel="name"
         placeholder="Select a transition"
         size="small"
-        class="w-full md:w-56"
+        class="w-56"
         @update:model-value="globalStore.updateMetadata('slideEffect', $event)"
       />
     </Config>
@@ -36,6 +36,7 @@ const { metadata } = storeToRefs(globalStore);
           <InputText
             :model-value="metadata.columns[device]"
             type="number"
+            step="0.1"
             class="!w-20"
             @update:model-value="globalStore.updateMetadata(`columns.${device}`, $event)"
           />

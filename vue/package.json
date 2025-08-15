@@ -10,9 +10,11 @@
     "build:watch": "vite build --watch & vite preview;"
   },
   "dependencies": {
+    "@fancyapps/ui": "^6.0.22",
     "@primeuix/themes": "^1.2.3",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
+    "fancybox": "^3.0.1",
     "pinia": "^3.0.3",
     "primevue": "^4.3.7",
     "swapy": "^1.0.5",

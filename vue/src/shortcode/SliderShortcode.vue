@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { Slider } from "@/types/interfaces";
 import ajaxAxios from "@/utils/axios";
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import Loading from "@/components/icons/Loading.vue";
+// @ts-ignore
+import FancyBoxComp from "@/shortcode/FancyBoxComp.vue";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
 import {
@@ -68,6 +70,10 @@ const slides = computed(() => {
 
 const isSliderDirectionVertical = computed(() => {
   return sliderMeta.value?.sliderDirection === "vertical";
+});
+
+const isClickActionLightbox = computed(() => {
+  return sliderMeta.value?.clickAction === "lightbox";
 });
 
 const breakpoints = computed(() => {
@@ -190,90 +196,98 @@ onMounted(async () => {
 
 <template>
   <div class="slider-pro relative">
-    <div v-if="laoding" class="flex items-center justify-center">
-      <Loading />
-    </div>
-
-    <swiper
-      v-else
-      :key="JSON.stringify(breakpoints)"
-      :modules="modules"
-      :creativeEffect="createiveEffect"
-      :effect="effect"
-      :space-between="sliderMeta?.spaceBetween"
-      :breakpoints="breakpoints"
-      :loop="sliderMeta?.infiniteLoop"
-      :direction="sliderMeta?.sliderDirection"
-      :centered-slides="sliderMeta?.centerSlides"
-      :autoplay="autoPlay"
-      :pagination="pagination"
-      :scrollbar="scrollbar"
-      :navigation="navigation"
-      grabCursor
-      auto-height
-      :style="`--padding-top: ${sliderMeta?.paddingTop}%;`"
-      @swiper="onSwiper"
-    >
-      <swiper-slide v-for="slide in slides" :key="slide.url" class="!h-fit">
-        <div class="relative w-full overflow-hidden" :style="{ paddingTop: 'var(--padding-top)' }">
-          <img
-            :src="slide.url"
-            alt=""
-            class="absolute top-0 left-0 h-full w-full object-cover transition-all duration-500 hover:scale-110"
-          />
-        </div>
-      </swiper-slide>
-      <div
-        v-show="sliderMeta?.navigation"
-        :style="`--swiper-pro-nav-color: #${sliderMeta?.navigationActiveColor};`"
-        class="pointer-events-none absolute top-1/2 left-0 z-20 flex w-full -translate-y-1/2 items-center justify-between [&_.swiper-button-disabled]:opacity-50 [&_path]:fill-[var(--swiper-pro-nav-color)] [&_svg]:size-8"
-      >
-        <div ref="navigationPrev" class="pointer-events-auto rotate-180 cursor-pointer transition-all">
-          <NextArrowIcon />
-        </div>
-        <div ref="navigationNext" class="pointer-events-auto cursor-pointer transition-all">
-          <NextArrowIcon />
-        </div>
+    <fancy-box-comp :options="{}">
+      <div v-if="laoding" class="flex items-center justify-center">
+        <Loading />
       </div>
-    </swiper>
 
-    <div
-      v-show="sliderMeta?.pagination && sliderMeta?.paginationStyle === 'scrollbar'"
-      :class="{
-        '!absolute top-1/2 right-4 z-20 h-full !w-[5px] -translate-y-1/2 py-4': isSliderDirectionVertical
-      }"
-      :style="{
-        margin: paginationMargin
-      }"
-    >
+      <swiper
+        v-else
+        :key="JSON.stringify(breakpoints)"
+        :modules="modules"
+        :creativeEffect="createiveEffect"
+        :effect="effect"
+        :space-between="sliderMeta?.spaceBetween"
+        :breakpoints="breakpoints"
+        :loop="sliderMeta?.infiniteLoop"
+        :direction="sliderMeta?.sliderDirection"
+        :centered-slides="sliderMeta?.centerSlides"
+        :autoplay="autoPlay"
+        :pagination="pagination"
+        :scrollbar="scrollbar"
+        :navigation="navigation"
+        grabCursor
+        auto-height
+        :style="`--padding-top: ${sliderMeta?.paddingTop}%;`"
+        @swiper="onSwiper"
+      >
+        <swiper-slide v-for="slide in slides" :key="slide.url" class="!h-fit">
+          <div class="relative w-full overflow-hidden" :style="{ paddingTop: 'var(--padding-top)' }">
+            <component
+              :is="isClickActionLightbox ? 'a' : 'div'"
+              :data-fancybox="isClickActionLightbox ? 'gallery' : null"
+              :href="slide.url"
+            >
+              <img
+                :src="slide.url"
+                alt=""
+                class="absolute top-0 left-0 h-full w-full object-cover transition-all duration-500 hover:scale-110"
+              />
+            </component>
+          </div>
+        </swiper-slide>
+        <div
+          v-show="sliderMeta?.navigation"
+          :style="`--swiper-pro-nav-color: #${sliderMeta?.navigationActiveColor};`"
+          class="pointer-events-none absolute top-1/2 left-0 z-20 flex w-full -translate-y-1/2 items-center justify-between [&_.swiper-button-disabled]:opacity-50 [&_path]:fill-[var(--swiper-pro-nav-color)] [&_svg]:size-8"
+        >
+          <div ref="navigationPrev" class="pointer-events-auto rotate-180 cursor-pointer transition-all">
+            <NextArrowIcon />
+          </div>
+          <div ref="navigationNext" class="pointer-events-auto cursor-pointer transition-all">
+            <NextArrowIcon />
+          </div>
+        </div>
+      </swiper>
+
       <div
-        ref="scrollBarContainer"
-        class="h-[4px] rounded-full bg-black [.slider-pro_&_.swiper-scrollbar-drag]:!bg-[var(--scrollbar-active)]"
+        v-show="sliderMeta?.pagination && sliderMeta?.paginationStyle === 'scrollbar'"
         :class="{
-          'h-full': isSliderDirectionVertical
+          '!absolute top-1/2 right-4 z-20 h-full !w-[5px] -translate-y-1/2 py-4': isSliderDirectionVertical
         }"
         :style="{
-          '--scrollbar-active': `#${sliderMeta?.paginationActiveColor}`,
-          background: `#${sliderMeta?.scrollbarBackground}`
+          margin: paginationMargin
         }"
-      ></div>
-    </div>
+      >
+        <div
+          ref="scrollBarContainer"
+          class="h-[4px] rounded-full bg-black [.slider-pro_&_.swiper-scrollbar-drag]:!bg-[var(--scrollbar-active)]"
+          :class="{
+            'h-full': isSliderDirectionVertical
+          }"
+          :style="{
+            '--scrollbar-active': `#${sliderMeta?.paginationActiveColor}`,
+            background: `#${sliderMeta?.scrollbarBackground}`
+          }"
+        ></div>
+      </div>
 
-    <div
-      v-show="sliderMeta?.pagination"
-      class="relative z-20 flex w-full items-center justify-center"
-      :class="{
-        '!absolute top-1/2 right-4 !w-fit -translate-y-1/2': isSliderDirectionVertical
-      }"
-      :style="{
-        margin: paginationMargin
-      }"
-    >
       <div
-        ref="paginationContainer"
-        class="!transform-[unset]"
-        :class="{ '!w-fit': sliderMeta?.paginationStyle !== 'dynamic' }"
-      />
-    </div>
+        v-show="sliderMeta?.pagination"
+        class="relative z-20 flex w-full items-center justify-center"
+        :class="{
+          '!absolute top-1/2 right-4 !w-fit -translate-y-1/2': isSliderDirectionVertical
+        }"
+        :style="{
+          margin: paginationMargin
+        }"
+      >
+        <div
+          ref="paginationContainer"
+          class="!transform-[unset]"
+          :class="{ '!w-fit': sliderMeta?.paginationStyle !== 'dynamic' }"
+        />
+      </div>
+    </fancy-box-comp>
   </div>
 </template>

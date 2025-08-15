@@ -18,7 +18,6 @@ export const ORDER_BY_OPTIONS = [
 
 export const CLICK_ACTIONS = [
   { name: "LightBox", value: "lightbox" },
-  { name: "Link", value: "link" },
   { name: "None", value: "none" }
 ];
 

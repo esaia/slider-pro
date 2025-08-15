@@ -38,7 +38,6 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
             'create_slider' => 'create_slider',
             'update_slider' => 'update_slider',
             'delete_slider' => 'delete_slider',
-            // 'get_slider' => 'get_slider',
             'get_sliders' => 'get_sliders',
 
             // Slider Meta operations

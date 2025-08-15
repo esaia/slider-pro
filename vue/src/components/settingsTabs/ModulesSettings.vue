@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ALL_DIRECTIONS, NAVIGATION_POSITIONS, ORIENTATION, PAGINATION_STYLES } from "@/constants/constants";
+import { ALL_DIRECTIONS, ORIENTATION, PAGINATION_STYLES } from "@/constants/constants";
 import Config from "@components/UI/Config.vue";
 import ToggleButton from "primevue/togglebutton";
 import InputText from "primevue/inputtext";
@@ -7,7 +7,6 @@ import InputGroup from "primevue/inputgroup";
 import InputGroupAddon from "primevue/inputgroupaddon";
 import ColorPicker from "primevue/colorpicker";
 import SelectButton from "primevue/selectbutton";
-import Select from "primevue/select";
 
 import Tabs from "primevue/tabs";
 import TabList from "primevue/tablist";
@@ -91,19 +90,6 @@ const { metadata } = storeToRefs(globalStore);
               onLabel="On"
               offLabel="Off"
               @update:model-value="globalStore.updateMetadata('navigation', $event)"
-            />
-          </Config>
-
-          <Config title="Navigation position" desc="Select a position for the navigation arrows.">
-            <Select
-              :model-value="metadata.navigationPosition"
-              :options="NAVIGATION_POSITIONS"
-              optionLabel="name"
-              placeholder="Select a navigation position"
-              size="small"
-              class="w-full md:w-56"
-              option-value="value"
-              @update:model-value="globalStore.updateMetadata('navigationPosition', $event)"
             />
           </Config>
 

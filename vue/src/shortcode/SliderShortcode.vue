@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Slider } from "@/types/interfaces";
 import ajaxAxios from "@/utils/axios";
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import Loading from "@/components/icons/Loading.vue";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -29,6 +29,7 @@ import "swiper/css/effect-flip";
 import "swiper/css/effect-coverflow";
 import "swiper/css/effect-cards";
 import "swiper/css/effect-creative";
+import NextArrowIcon from "@/components/icons/NextArrowIcon.vue";
 
 const props = defineProps<{
   sliderId?: number;
@@ -38,6 +39,9 @@ const sliderData = ref<Slider>();
 const laoding = ref(true);
 const paginationContainer = ref();
 const scrollBarContainer = ref();
+
+const navigationPrev = ref();
+const navigationNext = ref();
 
 const modules = [
   Navigation,
@@ -148,9 +152,28 @@ const scrollbar = computed(() => {
     : false;
 });
 
+const navigation = computed(() => {
+  return sliderMeta.value?.navigation
+    ? {
+        prevEl: navigationPrev.value,
+        nextEl: navigationNext.value
+      }
+    : false;
+});
+
 const paginationMargin = computed(() => {
   return `${sliderMeta.value?.paginationMargin?.top || 0}px ${sliderMeta.value?.paginationMargin?.right || 0}px ${sliderMeta.value?.paginationMargin?.down || 0}px ${sliderMeta.value?.paginationMargin?.left || 0}px`;
 });
+
+const onSwiper = async (swiper: any) => {
+  await nextTick();
+
+  // Update navigation elements
+  if (navigationPrev.value && navigationNext.value) {
+    swiper.navigation.init();
+    swiper.navigation.update();
+  }
+};
 
 onMounted(async () => {
   const { data } = await ajaxAxios.post("", {
@@ -185,9 +208,11 @@ onMounted(async () => {
       :autoplay="autoPlay"
       :pagination="pagination"
       :scrollbar="scrollbar"
+      :navigation="navigation"
       grabCursor
       auto-height
       :style="`--padding-top: ${sliderMeta?.paddingTop}%;`"
+      @swiper="onSwiper"
     >
       <swiper-slide v-for="slide in slides" :key="slide.url" class="!h-fit">
         <div class="relative w-full overflow-hidden" :style="{ paddingTop: 'var(--padding-top)' }">
@@ -198,10 +223,22 @@ onMounted(async () => {
           />
         </div>
       </swiper-slide>
+      <div
+        v-show="sliderMeta?.navigation"
+        :style="`--swiper-pro-nav-color: #${sliderMeta?.navigationActiveColor};`"
+        class="pointer-events-none absolute top-1/2 left-0 z-20 flex w-full -translate-y-1/2 items-center justify-between [&_.swiper-button-disabled]:opacity-50 [&_path]:fill-[var(--swiper-pro-nav-color)] [&_svg]:size-8"
+      >
+        <div ref="navigationPrev" class="pointer-events-auto rotate-180 cursor-pointer transition-all">
+          <NextArrowIcon />
+        </div>
+        <div ref="navigationNext" class="pointer-events-auto cursor-pointer transition-all">
+          <NextArrowIcon />
+        </div>
+      </div>
     </swiper>
 
     <div
-      v-show="sliderMeta?.paginationStyle === 'scrollbar'"
+      v-show="sliderMeta?.pagination && sliderMeta?.paginationStyle === 'scrollbar'"
       :class="{
         '!absolute top-1/2 right-4 z-20 h-full !w-[5px] -translate-y-1/2 py-4': isSliderDirectionVertical
       }"
@@ -223,6 +260,7 @@ onMounted(async () => {
     </div>
 
     <div
+      v-show="sliderMeta?.pagination"
       class="relative z-20 flex w-full items-center justify-center"
       :class="{
         '!absolute top-1/2 right-4 !w-fit -translate-y-1/2': isSliderDirectionVertical

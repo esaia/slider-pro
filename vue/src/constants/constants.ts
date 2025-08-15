@@ -39,16 +39,4 @@ export const PAGINATION_STYLES = [
   { name: "Fraction", value: "fraction" }
 ];
 
-export const NAVIGATION_POSITIONS = [
-  { name: "Vertical outer", value: "vertical-outer" },
-  { name: "Vertical inner", value: "vertical-inner" },
-  { name: "Vertical center", value: "vertical-center" },
-  { name: "Top right", value: "top-right" },
-  { name: "Top left", value: "top-left" },
-  { name: "Top center", value: "top-center" },
-  { name: "Bottom left", value: "bottom-left" },
-  { name: "Bottom center", value: "bottom-center" },
-  { name: "Bottom right", value: "bottom-right" } // assuming this was the missing unique one
-];
-
 export const ALL_DIRECTIONS = ["top", "right", "down", "left"];

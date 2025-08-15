@@ -73,22 +73,6 @@ abstract class SliderProBaseAjaxHandler
 
 
 
-    /**
-     * Check if slider exists
-     * 
-     * @param int $slider_id Slider ID
-     * @return bool
-     */
-    private function slider_exists($slider_id)
-    {
-        $count = SliderProDb::table($this->sliders_table)
-            ->where('id', '=', $slider_id)
-            ->count();
-
-        return $count > 0;
-    }
-
-
 
 
     /**
@@ -113,10 +97,30 @@ abstract class SliderProBaseAjaxHandler
     }
 
 
+
+    protected function map_slider_data($item)
+    {
+
+        $item = (array) $item;
+        if (!empty($item['slides'])) {
+            $item['slides'] = json_decode($item['slides'], true);
+        } else {
+            $item['slides'] = [];
+        }
+
+
+
+        $meta = $this->get_slider_meta($item['id']);
+
+        $item['meta'] = $meta;
+
+        return $item;
+    }
+
     /**
      * Get slider meta
      */
-    protected function get_slider_meta($id = null)
+    private function get_slider_meta($id = null)
     {
         $this->verify_request();
         $slider_id = $id ?? $this->get_slider_id();
@@ -131,7 +135,7 @@ abstract class SliderProBaseAjaxHandler
      * @param int $slider_id Slider ID
      * @return array Meta data
      */
-    protected function get_slider_meta_data($slider_id)
+    private function get_slider_meta_data($slider_id)
     {
 
         $metas = SliderProDb::table($this->slider_metas_table)
@@ -156,22 +160,19 @@ abstract class SliderProBaseAjaxHandler
 
 
 
-    protected function map_slider_data($item)
+
+    /**
+     * Check if slider exists
+     * 
+     * @param int $slider_id Slider ID
+     * @return bool
+     */
+    private function slider_exists($slider_id)
     {
+        $count = SliderProDb::table($this->sliders_table)
+            ->where('id', '=', $slider_id)
+            ->count();
 
-        $item = (array) $item;
-        if (!empty($item['slides'])) {
-            $item['slides'] = json_decode($item['slides'], true);
-        } else {
-            $item['slides'] = [];
-        }
-
-
-
-        $meta = $this->get_slider_meta($item['id']);
-
-        $item['meta'] = $meta;
-
-        return $item;
+        return $count > 0;
     }
 }

@@ -74,7 +74,6 @@ export interface Meta {
   pauseonhover: boolean;
   stopOnLastSlide: boolean;
   navigation: boolean;
-  navigationPosition: string;
   navigationActiveColor: string;
   pagination: boolean;
   paginationStyle: string;

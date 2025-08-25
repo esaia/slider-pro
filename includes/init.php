@@ -52,10 +52,18 @@ function slider_pro__enqueue_vue_assets($hook)
 {
     if ($hook !== 'toplevel_page_slider-pro') return;
 
+    slider_pro__enque_scripts();
+}
+
+
+function slider_pro__enque_scripts()
+{
+
     // Only enqueue once if not already enqueued
     if (wp_script_is('slider-pro-vue-js', 'enqueued')) {
         return; // If Vue.js script is already enqueued, do nothing
     }
+
 
 
     // Enqueue WordPress media manager scripts (used for media handling in the plugin)
@@ -82,7 +90,9 @@ function slider_pro__enqueue_vue_assets($hook)
     ));
 }
 
+
 add_action('admin_enqueue_scripts', 'slider_pro__enqueue_vue_assets', 5);
+add_action('wp_enqueue_scripts', 'slider_pro__enque_scripts', 5);
 
 
 

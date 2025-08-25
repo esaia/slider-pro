@@ -124,19 +124,6 @@ abstract class SliderProBaseAjaxHandler
     {
         $this->verify_request();
         $slider_id = $id ?? $this->get_slider_id();
-        $meta_data = $this->get_slider_meta_data($slider_id);
-        return $meta_data;
-    }
-
-
-    /**
-     * Get slider meta data as associative array
-     * 
-     * @param int $slider_id Slider ID
-     * @return array Meta data
-     */
-    private function get_slider_meta_data($slider_id)
-    {
 
         $metas = SliderProDb::table($this->slider_metas_table)
             ->where('slider_id', '=', $slider_id)

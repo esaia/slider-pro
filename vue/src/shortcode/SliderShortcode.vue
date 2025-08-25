@@ -76,20 +76,27 @@ const isClickActionLightbox = computed(() => {
   return sliderMeta.value?.clickAction === "lightbox";
 });
 
+const isSliderPerViewOne = computed(() => {
+  return (
+    isSliderDirectionVertical.value ||
+    (sliderMeta.value?.slideEffect && !["slide", "coverflow"].includes(sliderMeta.value?.slideEffect.toLowerCase()))
+  );
+});
+
 const breakpoints = computed(() => {
   console.log("sliderMeta,", sliderMeta.value);
   return {
     0: {
-      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.mobile)
+      slidesPerView: isSliderPerViewOne.value ? 1 : Number(sliderMeta.value?.columns?.mobile)
     },
     800: {
-      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.tablet)
+      slidesPerView: isSliderPerViewOne.value ? 1 : Number(sliderMeta.value?.columns?.tablet)
     },
     1280: {
-      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.laptop)
+      slidesPerView: isSliderPerViewOne.value ? 1 : Number(sliderMeta.value?.columns?.laptop)
     },
     1920: {
-      slidesPerView: isSliderDirectionVertical.value ? 1 : Number(sliderMeta.value?.columns?.desktop)
+      slidesPerView: isSliderPerViewOne.value ? 1 : Number(sliderMeta.value?.columns?.desktop)
     }
   };
 });

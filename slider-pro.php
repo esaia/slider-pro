@@ -28,6 +28,7 @@ function dd($data): void
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/migrations.php';
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/Db.php';
 require_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . 'includes/init.php';
+include_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . './includes/shortcodes.php';
 
 // Controllers
 include_once  plugin_dir_path(SLIDER_PRO_PLUGIN_PATH) . './includes/BaseController.php';

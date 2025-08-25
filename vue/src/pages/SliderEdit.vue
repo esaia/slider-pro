@@ -17,7 +17,7 @@ const { metadata, activeSlider } = storeToRefs(globalStore);
 
 const title = ref(activeSlider.value?.title || "");
 const loading = ref(false);
-const isPreview = ref(true);
+const isPreview = ref(false);
 const previewKey = ref(0);
 
 const handleUpdateSlider = async () => {

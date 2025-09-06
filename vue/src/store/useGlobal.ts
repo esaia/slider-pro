@@ -7,7 +7,7 @@ export const useGlobalStore = defineStore("global", () => {
 
   const metadata = ref<any>({
     // General settings
-    slideEffect: "slide",
+    slideEffect: "",
     columns: { desktop: 1, laptop: 1, tablet: 1, mobile: 1 },
     paddingTop: 50,
     spaceBetween: 0,
@@ -26,11 +26,11 @@ export const useGlobalStore = defineStore("global", () => {
     stopOnLastSlide: false,
 
     // Navigation
-    navigation: true,
+    navigation: false,
     navigationActiveColor: "000000",
 
     // Pagination
-    pagination: true,
+    pagination: false,
     paginationStyle: "bullets",
     scrollbarBackground: "cccccc",
     paginationActiveColor: "cccccc",

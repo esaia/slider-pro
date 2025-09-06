@@ -4,7 +4,7 @@ import { useGlobalStore } from "@/store/useGlobal";
 import { useSelectImage } from "@/composables/useSelectImage";
 import TrashIcon from "@/components/icons/TrashIcon.vue";
 import GalleryIcon from "@/components/icons/GalleryIcon.vue";
-import PencliIcon from "@/components/icons/PencliIcon.vue";
+// import PencliIcon from "@/components/icons/PencliIcon.vue";
 import { createSwapy, type Swapy } from "swapy";
 
 import InputText from "primevue/inputtext";
@@ -23,7 +23,10 @@ const globalStore = useGlobalStore();
 const { activeSlider } = storeToRefs(globalStore);
 const { selectedImages, selectImage } = useSelectImage(props.multiple || false);
 
-const hoverIcons = [PencliIcon, TrashIcon];
+const hoverIcons = [
+  // PencliIcon,
+  TrashIcon
+];
 
 let swapyInstance: null | Swapy = null;
 
@@ -32,13 +35,15 @@ const isModalOpen = ref(false);
 const data = ref<Slide[]>(activeSlider.value?.slides || []);
 const activeSlide = ref<Slide | null>(null);
 
-const handleClickIcon = (index: number, img: string) => {
-  if (index === 0) {
-    isModalOpen.value = true;
-    activeSlide.value = data.value.find((i) => i.url === img) || null;
-  } else if (index === 1) {
-    selectedImages.value = selectedImages.value?.filter((image) => image.url !== img) || [];
-  }
+const handleClickIcon = (img: string) => {
+  selectedImages.value = selectedImages.value?.filter((image) => image.url !== img) || [];
+
+  // if (index === 0) {
+  //   isModalOpen.value = true;
+  //   activeSlide.value = data.value.find((i) => i.url === img) || null;
+  // } else if (index === 1) {
+  //   selectedImages.value = selectedImages.value?.filter((image) => image.url !== img) || [];
+  // }
 };
 
 const updateSlide = () => {
@@ -135,7 +140,7 @@ onMounted(() => {
             v-for="(icon, i) in hoverIcons"
             :key="i"
             class="scale-0 cursor-pointer rounded-[999px] bg-white p-2 opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100 hover:scale-105 [&_svg]:size-4"
-            @click="handleClickIcon(i, item.url)"
+            @click="handleClickIcon(item.url)"
           >
             <component :is="icon" />
           </div>

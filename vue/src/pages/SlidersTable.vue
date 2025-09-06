@@ -14,6 +14,7 @@ const globalStore = useGlobalStore();
 const { sliders } = storeToRefs(globalStore);
 
 const perPage = 10;
+const first = ref(1);
 
 const isCreateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -62,7 +63,9 @@ const handleClickDeleteBtn = (id: number) => {
 };
 
 const handlePageChange = (e: any) => {
-  fetchSlides((e?.page || 0) + 1);
+  first.value = e.first;
+
+  fetchSlides(e.page + 1);
 };
 
 const fetchSlides = async (page: number = 1) => {
@@ -96,6 +99,7 @@ onMounted(() => {
 
     <DataTable
       v-if="sliders"
+      v-model:first="first"
       :value="sliders?.data"
       tableStyle="min-width: 50rem"
       removableSort

@@ -22,7 +22,7 @@ import ModulesSettings from "@components/settingsTabs/ModulesSettings.vue";
           <GeneralSettings />
         </TabPanel>
         <TabPanel value="1">
-          <p class="m-0">123123</p>
+          <p class="m-0">Your configs</p>
         </TabPanel>
         <TabPanel value="2">
           <ModulesSettings />

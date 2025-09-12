@@ -109,7 +109,7 @@ onMounted(() => {
       lazy
       @page="handlePageChange"
     >
-      <Column field="title" header="Title" sortable></Column>
+      <Column field="title" header="Title"></Column>
 
       <Column field="shortcode" header="Shortcode">
         <template #body="slotProps">
@@ -117,7 +117,7 @@ onMounted(() => {
         </template>
       </Column>
 
-      <Column field="created_at" header="Date" sortable></Column>
+      <Column field="created_at" header="Date"></Column>
       <Column header="Action">
         <template #body="slotProps">
           <a :href="`${sliderPro.plugin_url}&slider=${slotProps.data.id}`">

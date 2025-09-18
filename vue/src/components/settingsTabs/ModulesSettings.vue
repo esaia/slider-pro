@@ -42,10 +42,10 @@ const { metadata } = storeToRefs(globalStore);
           <Config title="Slider autoplay delay" desc="Set autoplay scroll speed delay in millisecond.">
             <InputGroup>
               <InputText
-                :model-value="metadata.autoplayDelay"
+                :model-value="metadata.autoplayDelay.toString()"
                 type="number"
                 class="!w-24"
-                @update:model-value="globalStore.updateMetadata('autoplayDelay', $event)"
+                @update:model-value="globalStore.updateMetadata('autoplayDelay', Number($event))"
               />
               <InputGroupAddon> MS </InputGroupAddon>
             </InputGroup>
@@ -167,10 +167,10 @@ const { metadata } = storeToRefs(globalStore);
               <InputGroup v-for="direction in ALL_DIRECTIONS" :key="direction">
                 <InputGroupAddon> {{ direction }} </InputGroupAddon>
                 <InputText
-                  :model-value="metadata.paginationMargin[direction]"
+                  :model-value="metadata.paginationMargin[direction].toString()"
                   type="number"
                   class="!w-20"
-                  @update:model-value="globalStore.updateMetadata(`paginationMargin.${direction}`, $event)"
+                  @update:model-value="globalStore.updateMetadata(`paginationMargin.${direction}`, Number($event))"
                 />
               </InputGroup>
             </div>

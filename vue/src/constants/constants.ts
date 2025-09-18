@@ -9,7 +9,7 @@ export const TRANSITIONS = [
   { name: "Creative 2", value: "creative2" }
 ];
 
-export const DEVICES = ["desktop", "laptop", "tablet", "mobile"];
+export const DEVICES = ["desktop", "laptop", "tablet", "mobile"] as const;
 
 export const ORDER_BY_OPTIONS = [
   { name: "Drag & drop", value: "drag" },
@@ -38,4 +38,4 @@ export const PAGINATION_STYLES = [
   { name: "Fraction", value: "fraction" }
 ];
 
-export const ALL_DIRECTIONS = ["top", "right", "down", "left"];
+export const ALL_DIRECTIONS = ["top", "right", "down", "left"] as const;

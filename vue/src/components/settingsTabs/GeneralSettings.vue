@@ -34,7 +34,7 @@ const { metadata } = storeToRefs(globalStore);
         <InputGroup v-for="device in DEVICES" :key="device">
           <InputGroupAddon> {{ device }} </InputGroupAddon>
           <InputText
-            :model-value="metadata.columns[device]"
+            :model-value="metadata.columns[device].toString()"
             type="number"
             step="0.1"
             class="!w-20"
@@ -47,10 +47,10 @@ const { metadata } = storeToRefs(globalStore);
     <Config title="Padding top" desc="Set a padding top % in range 1-100.">
       <InputGroup>
         <InputText
-          :model-value="metadata.paddingTop"
+          :model-value="metadata.paddingTop.toString()"
           type="number"
           class="!w-20"
-          @update:model-value="globalStore.updateMetadata('paddingTop', $event)"
+          @update:model-value="globalStore.updateMetadata('paddingTop', Number($event))"
         />
         <InputGroupAddon> % </InputGroupAddon>
       </InputGroup>
@@ -59,10 +59,10 @@ const { metadata } = storeToRefs(globalStore);
     <Config title="Space between" desc="Set a space between the items.">
       <InputGroup>
         <InputText
-          :model-value="metadata.spaceBetween"
+          :model-value="metadata.spaceBetween.toString()"
           type="number"
           class="!w-20"
-          @update:model-value="globalStore.updateMetadata('spaceBetween', $event)"
+          @update:model-value="globalStore.updateMetadata('spaceBetween', Number($event))"
         />
         <InputGroupAddon> PX </InputGroupAddon>
       </InputGroup>

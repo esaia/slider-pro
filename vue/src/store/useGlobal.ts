@@ -1,11 +1,11 @@
 import type { Slide, SlidersDataInterface } from "@/types/interfaces";
 import { defineStore } from "pinia";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 
 export const useGlobalStore = defineStore("global", () => {
   const sliders = ref<SlidersDataInterface>();
 
-  const metadata = ref<any>({
+  const metadata = ref({
     // General settings
     slideEffect: "",
     columns: { desktop: 1, laptop: 1, tablet: 1, mobile: 1 },
@@ -41,19 +41,19 @@ export const useGlobalStore = defineStore("global", () => {
   const activeSlider = computed(() => {
     const params = new URLSearchParams(window.location.search);
 
-    const sliderId = ref(params.get("slider"));
+    const sliderId = params.get("slider");
 
     if (!sliderId) return;
 
-    return sliders.value?.data.find((i) => i.id.toString() === sliderId.value?.toString());
+    return sliders.value?.data.find((i) => i.id.toString() === sliderId?.toString());
   });
 
   const updateMetadata = (key: string, value: any) => {
     const [parent, child] = key.split(".");
-    if (child && Object.prototype.hasOwnProperty.call(metadata.value[parent], child)) {
-      metadata.value[parent][child] = ["columns", "margin"].includes(parent) ? Number(value) : value;
+    if (child && Object.prototype.hasOwnProperty.call((metadata.value as any)[parent], child)) {
+      (metadata.value as any)[parent][child] = ["columns", "margin"].includes(parent) ? Number(value) : value;
     } else {
-      metadata.value[key] = value;
+      (metadata.value as any)[key] = value;
     }
   };
 
@@ -69,17 +69,18 @@ export const useGlobalStore = defineStore("global", () => {
     }
   };
 
-  watch(
-    () => activeSlider.value,
-    () => {
-      if (activeSlider.value?.meta && Object.keys(activeSlider.value?.meta).length) {
-        metadata.value = activeSlider.value?.meta;
-      }
-    },
-    {
-      deep: true
-    }
-  );
+  // TEMPORARY COMMENT: I doubt we don't need it.
+  // watch(
+  //   () => activeSlider.value,
+  //   () => {
+  //     if (activeSlider.value?.meta && Object.keys(activeSlider.value?.meta).length) {
+  //       metadata.value = activeSlider.value?.meta;
+  //     }
+  //   },
+  //   {
+  //     deep: true
+  //   }
+  // );
 
   return {
     // State

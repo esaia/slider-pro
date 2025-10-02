@@ -16,16 +16,18 @@ const { metadata } = storeToRefs(globalStore);
 </script>
 <template>
   <div class="space-y-6">
+    <pre>
+    {{ metadata }}
+    </pre>
     <Config title="Slide Effect" desc="Select a slide transition effect.">
       <Select
-        :model-value="metadata.slideEffect"
+        v-model="metadata.slideEffect"
         :options="TRANSITIONS"
         option-value="value"
         optionLabel="name"
         placeholder="Select a transition"
         size="small"
         class="w-56"
-        @update:model-value="globalStore.updateMetadata('slideEffect', $event)"
       />
     </Config>
 
@@ -33,13 +35,7 @@ const { metadata } = storeToRefs(globalStore);
       <div class="flex items-center gap-2">
         <InputGroup v-for="device in DEVICES" :key="device">
           <InputGroupAddon> {{ device }} </InputGroupAddon>
-          <InputText
-            :model-value="metadata.columns[device].toString()"
-            type="number"
-            step="0.1"
-            class="!w-20"
-            @update:model-value="globalStore.updateMetadata(`columns.${device}`, $event)"
-          />
+          <InputText v-model="metadata.columns[device]" type="number" step="0.1" class="!w-20" />
         </InputGroup>
       </div>
     </Config>
@@ -58,12 +54,7 @@ const { metadata } = storeToRefs(globalStore);
 
     <Config title="Space between" desc="Set a space between the items.">
       <InputGroup>
-        <InputText
-          :model-value="metadata.spaceBetween.toString()"
-          type="number"
-          class="!w-20"
-          @update:model-value="globalStore.updateMetadata('spaceBetween', Number($event))"
-        />
+        <InputText v-model="metadata.spaceBetween" type="number" class="!w-20" />
         <InputGroupAddon> PX </InputGroupAddon>
       </InputGroup>
     </Config>
@@ -92,12 +83,7 @@ const { metadata } = storeToRefs(globalStore);
     </Config>
 
     <Config title="Infinite Loop" desc="Enable/Disable infinite loop mode.">
-      <ToggleButton
-        :model-value="metadata.infiniteLoop"
-        onLabel="On"
-        offLabel="Off"
-        @update:model-value="globalStore.updateMetadata('infiniteLoop', $event)"
-      />
+      <ToggleButton v-model="metadata.infiniteLoop" onLabel="On" offLabel="Off" />
     </Config>
 
     <Config title="Slider direction" desc="Choose a slider direction.">

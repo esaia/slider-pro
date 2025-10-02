@@ -61,15 +61,15 @@ interface Nonces {
 export interface Meta {
   slideEffect: string;
   columns: Columns;
-  paddingTop: number;
-  spaceBetween: number;
+  paddingTop: string;
+  spaceBetween: string;
   clickAction: string;
   orderBy: string;
   infiniteLoop: boolean;
   sliderDirection: "horizontal" | "vertical";
   centerSlides: boolean;
   autoplay: boolean;
-  autoplayDelay: number;
+  autoplayDelay: string;
   reversedDirection: boolean;
   pauseonhover: boolean;
   stopOnLastSlide: boolean;
@@ -84,17 +84,17 @@ export interface Meta {
 }
 
 interface PaginationMargin {
-  top: number;
-  right: number;
-  down: number;
-  left: number;
+  top: string;
+  right: string;
+  down: string;
+  left: string;
 }
 
 interface Columns {
-  desktop: number;
-  laptop: number;
-  tablet: number;
-  mobile: number;
+  desktop: string;
+  laptop: string;
+  tablet: string;
+  mobile: string;
 }
 
 export interface SlidersDataInterface {

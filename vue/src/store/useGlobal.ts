@@ -1,16 +1,17 @@
-import type { Slide, SlidersDataInterface } from "@/types/interfaces";
+import type { Slide, Slider, SlidersDataInterface } from "@/types/interfaces";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { ref, watch } from "vue";
 
 export const useGlobalStore = defineStore("global", () => {
   const sliders = ref<SlidersDataInterface>();
+  const activeSlider = ref<Slider>();
 
   const metadata = ref({
     // General settings
     slideEffect: "",
-    columns: { desktop: 1, laptop: 1, tablet: 1, mobile: 1 },
-    paddingTop: 50,
-    spaceBetween: 0,
+    columns: { desktop: "1", laptop: "1", tablet: "1", mobile: "1" },
+    paddingTop: "50",
+    spaceBetween: "0",
     clickAction: "lightbox",
     orderBy: "drag",
     infiniteLoop: false,
@@ -20,7 +21,7 @@ export const useGlobalStore = defineStore("global", () => {
 
     // Autoplay
     autoplay: false,
-    autoplayDelay: 3000,
+    autoplayDelay: "3000",
     reversedDirection: false,
     pauseonhover: true,
     stopOnLastSlide: false,
@@ -35,17 +36,7 @@ export const useGlobalStore = defineStore("global", () => {
     scrollbarBackground: "cccccc",
     paginationActiveColor: "cccccc",
     clickable: false,
-    paginationMargin: { top: 0, right: 0, down: 0, left: 0 }
-  });
-
-  const activeSlider = computed(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    const sliderId = params.get("slider");
-
-    if (!sliderId) return;
-
-    return sliders.value?.data.find((i) => i.id.toString() === sliderId?.toString());
+    paginationMargin: { top: "0", right: "0", down: "0", left: "0" }
   });
 
   const updateMetadata = (key: string, value: any) => {
@@ -61,6 +52,10 @@ export const useGlobalStore = defineStore("global", () => {
     sliders.value = sliderParam;
   };
 
+  const setActiveSlider = (slide: Slider) => {
+    activeSlider.value = slide;
+  };
+
   const setSlides = (slides: Slide[]) => {
     if (sliders.value && sliders.value.data) {
       sliders.value.data = sliders.value.data.map((i) => {
@@ -69,18 +64,17 @@ export const useGlobalStore = defineStore("global", () => {
     }
   };
 
-  // TEMPORARY COMMENT: I doubt we don't need it.
-  // watch(
-  //   () => activeSlider.value,
-  //   () => {
-  //     if (activeSlider.value?.meta && Object.keys(activeSlider.value?.meta).length) {
-  //       metadata.value = activeSlider.value?.meta;
-  //     }
-  //   },
-  //   {
-  //     deep: true
-  //   }
-  // );
+  watch(
+    () => activeSlider.value,
+    () => {
+      if (activeSlider.value?.meta && Object.keys(activeSlider.value?.meta).length) {
+        metadata.value = activeSlider.value?.meta;
+      }
+    },
+    {
+      deep: true
+    }
+  );
 
   return {
     // State
@@ -91,6 +85,7 @@ export const useGlobalStore = defineStore("global", () => {
     // Setters
     updateMetadata,
     setSliders,
-    setSlides
+    setSlides,
+    setActiveSlider
   };
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import DataTable from "primevue/datatable";
@@ -8,19 +8,21 @@ import Dialog from "primevue/dialog";
 import ajaxAxios from "@/utils/axios";
 import { useGlobalStore } from "@/store/useGlobal";
 import { storeToRefs } from "pinia";
-import Loading from "@/components/icons/Loading.vue";
+import { PER_PAGE } from "@/constants/constants";
+
+const emit = defineEmits<{
+  (e: "fetchSliders", page?: number): void;
+}>();
 
 const globalStore = useGlobalStore();
 const { sliders } = storeToRefs(globalStore);
 
-const perPage = 10;
 const first = ref(1);
 
 const isCreateModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const title = ref("");
 const errorMsg = ref("");
-const loading = ref(true);
 const activeSlideId = ref();
 
 const handleCreateSlider = async () => {
@@ -34,7 +36,7 @@ const handleCreateSlider = async () => {
 
     title.value = "";
     isCreateModalOpen.value = false;
-    fetchSlides();
+    emit("fetchSliders");
   } catch (error) {
     errorMsg.value = "something went wrong";
   }
@@ -51,7 +53,7 @@ const handleDeleteSlider = async () => {
     });
 
     isDeleteModalOpen.value = false;
-    fetchSlides();
+    emit("fetchSliders");
   } catch (error) {
     errorMsg.value = "something went wrong";
   }
@@ -65,33 +67,12 @@ const handleClickDeleteBtn = (id: number) => {
 const handlePageChange = (e: any) => {
   first.value = e.first;
 
-  fetchSlides(e.page + 1);
+  emit("fetchSliders", e.page + 1);
 };
-
-const fetchSlides = async (page: number = 1) => {
-  loading.value = true;
-  const { data } = await ajaxAxios.post("", {
-    action: "slider_pro_get_sliders",
-    nonce: sliderPro.nonce,
-    perPage,
-    page
-  });
-
-  loading.value = false;
-
-  globalStore.setSliders(data?.data);
-};
-
-onMounted(() => {
-  fetchSlides();
-});
 </script>
 
 <template>
-  <div v-if="loading">
-    <Loading />
-  </div>
-  <div v-else>
+  <div>
     <div class="mb-6 flex items-center justify-between">
       <div class="text-2xl font-semibold">Slider Pro</div>
       <Button label="Add slider" class="w-fit" @click="isCreateModalOpen = true" />
@@ -104,7 +85,7 @@ onMounted(() => {
       tableStyle="min-width: 50rem"
       removableSort
       :paginator="sliders.total > sliders.per_page"
-      :rows="perPage"
+      :rows="PER_PAGE"
       :totalRecords="sliders.total"
       lazy
       @page="handlePageChange"

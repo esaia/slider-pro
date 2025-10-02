@@ -39,6 +39,7 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
             'update_slider' => 'update_slider',
             'delete_slider' => 'delete_slider',
             'get_sliders' => 'get_sliders',
+            'get_slider' => 'get_slider',
 
             // Slider Meta operations
             'update_slider_meta_bulk' => 'update_slider_meta_bulk',
@@ -137,6 +138,20 @@ class SliderProAjaxHandler extends SliderProBaseAjaxHandler
             $data['data'] = array_map([$this, 'map_slider_data'], $data['data']);
         }
 
+
+        $this->send_success($data);
+    }
+
+
+    public function get_slider()
+    {
+        $this->verify_request();
+
+        $slider_id = $this->get_slider_id();
+
+        $data = SliderProDb::table($this->sliders_table)->find($slider_id);
+
+        $data = $this->map_slider_data($data);
 
         $this->send_success($data);
     }

@@ -39,3 +39,5 @@ export const PAGINATION_STYLES = [
 ];
 
 export const ALL_DIRECTIONS = ["top", "right", "down", "left"] as const;
+
+export const PER_PAGE = 10;

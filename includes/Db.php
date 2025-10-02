@@ -125,11 +125,9 @@ class SliderProDb
 
                 $clause = "`{$condition['column']}` {$condition['operator']} {$placeholder}";
 
-                if ($index === 0) {
-                    $whereParts[] = $clause;
-                } else {
-                    $whereParts[] = "{$condition['boolean']} " . $clause;
-                }
+
+                $whereParts[] = ($index === 0 ? '' : "{$condition['boolean']} ") . $clause;
+
 
                 if ($condition['value'] !== 'NULL') {
                     $params[] = is_numeric($condition['value']) ? (int) $condition['value'] : $condition['value'];

@@ -134,7 +134,7 @@ const createiveEffect = computed(() => {
 const autoPlay = computed(() => {
   return sliderMeta.value?.autoplay
     ? {
-        delay: sliderMeta.value.autoplayDelay || 3000,
+        delay: Number(sliderMeta.value.autoplayDelay) || 3000,
         disableOnInteraction: false,
         pauseOnMouseEnter: sliderMeta.value.pauseonhover,
         reverseDirection: sliderMeta.value.reversedDirection,
